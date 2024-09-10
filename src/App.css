@@ -1,0 +1,85 @@
+
+/* General body styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f8;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Main application container */
+.App {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+/* Header styles */
+h1, h2 {
+  color: #333333;
+}
+
+/* Input field styling */
+input[type="text"] {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 2px solid #0056b3;
+  border-radius: 4px;
+  width: calc(100% - 24px);
+  box-sizing: border-box;
+}
+
+/* Button styling */
+button {
+  background-color: #007bff!important;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Styling for status and blog post display */
+.status, .blog-post {
+  padding: 15px;
+  background-color: #e9ecef;
+  border-left: 4px solid #2e2e2e;
+  margin: 10px 0;
+}
+
+.stats {
+  font-size: 14px;
+}
+
+/* Task and agent list styles */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+/* Additional styling as needed for other elements */
