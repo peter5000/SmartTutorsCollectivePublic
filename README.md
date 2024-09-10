@@ -13,8 +13,8 @@ To get this project up and running, follow these steps:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/kaibanjs-news-blogger.git
-   cd kaibanjs-news-blogger
+   git clone https://github.com/your-username/kaibanjs-react-demo.git
+   cd kaibanjs-react-demo
    ```
 
 2. **Install dependencies**
