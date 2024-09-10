@@ -44,7 +44,7 @@ const DevUtils = () => {
     missingKeys.push({
       name: 'VITE_OPENAI_API_KEY',
       purpose: 'Used for generating AI responses and processing natural language queries.',
-      projectLocation: 'In the .env file: VITE_OPENAI_API_KEY=your-api-key-value',
+      projectLocation: 'In the .env file on the root of the project: VITE_OPENAI_API_KEY=your-api-key-value',
       valueLocation: 'https://platform.openai.com/account/api-keys'
     });
   }
@@ -53,7 +53,7 @@ const DevUtils = () => {
     missingKeys.push({
       name: 'VITE_TRAVILY_API_KEY',
       purpose: 'Powers the search tool for agents, providing access to search-related data and services.',
-      projectLocation: 'In the .env file: VITE_TRAVILY_API_KEY=your-api-key-value',
+      projectLocation: 'In the .env file on the root of the project: VITE_TRAVILY_API_KEY=your-api-key-value',
       valueLocation: 'https://tavily.com/#api' // Replace with actual URL if different
     });
   }
