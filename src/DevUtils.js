@@ -56,10 +56,6 @@ const injectStyles = () => {
       color: #0f172a;
     }
     
-    .error-item-detail {
-      margin-bottom: 8px;
-    }
-    
     .detail-label {
       font-weight: 600;
       color: #0f172a;
@@ -93,14 +89,20 @@ const injectStyles = () => {
       color: #38bdf8;
     }
 
-        @media (max-width: 1024px) {
+    @media (max-width: 1024px) {
       .error-item {
         grid-template-columns: 40px 1fr;
         grid-template-rows: auto;
+        gap: 0.75rem;
+        align-items: center;
       }
 
       .error-item > *:nth-child(n+3) {
         grid-column: 1 / -1;
+      }
+
+      .error-item-idx {
+        height: 40px;
       }
     }
   `;
@@ -123,13 +125,13 @@ const showApiKeyError = (missingKeys) => {
         <li class="error-item">
           <div class="error-item-idx">${idx + 1}</div>
           <div class="error-item-title">${key.name}</div>
-          <div class="error-item-detail">
+          <div>
             <span class="detail-label">Purpose:</span> ${key.purpose}
           </div>
-          <div class="error-item-detail">
+          <div>
             <span class="detail-label">Where to put it:</span> ${key.projectLocation}
           </div>
-          <div class="error-item-detail">
+          <div>
             <span class="detail-label">Get the value here:</span> <a href="${key.valueLocation}" target="_blank" class="error-link">${key.valueLocation}</a>
           </div>
         </li>
