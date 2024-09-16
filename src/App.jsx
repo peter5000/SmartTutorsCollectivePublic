@@ -12,7 +12,7 @@ function App() {
 
   // Connecting to the KaibanJS Store
   const useTeamStore = blogTeam.useStore();
-  
+
   const {
     agents,
     tasks,
@@ -26,12 +26,12 @@ function App() {
   const generateBlogPost = async () => {
     setBlogPost('');
     setStats(null);
-  
+
     try {
       const output = await blogTeam.start({ topic });
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
-  
+
         const { costDetails, llmUsageStats, duration } = output.stats;
         setStats({
           duration: duration,
@@ -47,60 +47,79 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>AI Agents News Blogging Team</h1>
-      <input
-        type="text"
-        value={topic}
-        onChange={(e) => setTopic(e.target.value)}
-        placeholder="Enter a topic... E.g. 'AI News Sep, 2024'"
-      />
-      <button onClick={generateBlogPost}>
-        Generate Blog Post
-      </button>
-      <div>Status: {teamWorkflowStatus}</div>
-      <h2>Generated Blog Post:</h2>
-      <div className="blog-post">
-  {blogPost ? (
-    <ReactMarkdown>{blogPost}</ReactMarkdown>
-  ) : (
-    <p>No blog post available yet. Enter a topic and click 'Generate Blog Post' to see results here.</p>
-  )}
-</div>
+    <div className="container">
+      <h1 className="header">AI Agents News Blogging Team</h1>
+      <div className="grid">
+        <div className="column">
+          <div className="options">
+            <input
+              type="text"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Enter a topic... E.g. 'AI News Sep, 2024'"
+            />
+            <button onClick={generateBlogPost}>
+              Generate
+            </button>
+          </div>
+          <div className="status">Status <span>{teamWorkflowStatus}</span></div>
+          {/* Generated Blog Post */}
+          <div className="blog-post">
+            {blogPost ? (
+              <ReactMarkdown>{blogPost}</ReactMarkdown>
+            ) : (
+              <p className="blog-post-info"><span>ℹ️</span><span>No blog post available yet</span><span>Enter a topic and click 'Generate' to see results here.</span></p>
+            )}
+          </div>
+        </div>
 
-      {/* We'll add more UI elements in the next steps */}
-      
-      {/* Agents Here */}
-      <h2>🕵️‍♂️ Agents:</h2>
-<ul className="agent-list">
-  {agents && agents.map((agent, index) => (
-    <li key={index}>
-      {agent.name}: {agent.status}
-    </li>
-  ))}
-</ul>      
+        {/* We'll add more UI elements in the next steps */}
+        <div className="column">
+          {/* Agents Here */}
+          <h2 className="title">Agents</h2>
+          <ul className="agent-list">
+            {agents && agents.map((agent, index) => (
+              <li key={index}>
+                <img src={`https://ui-avatars.com/api/name=${encodeURIComponent(agent.name)}?background=3b82f6&color=fff`} alt={`${agent.name}'s avatar`} />
+                <span>{agent.name}</span>
+                <span>{agent.status}</span>
+              </li>
+            ))}
+          </ul>
 
-      {/* Tasks Here */}
-      <h2>📝 Tasks:</h2>
-<ul className="task-list">
-  {tasks && tasks.map((task, index) => (
-    <li key={index}>
-      {task.title}: {task.status}
-    </li>
-  ))}
-</ul>      
-      
-      {/* Stats Here */}
-      <h2>📊 Stats:</h2>
-{stats ? (
-  <div className="stats">
-    <p>Duration: {stats.duration} ms</p>
-    <p>Total Token Count: {stats.totalTokenCount}</p>
-    <p>Total Cost: ${stats.totalCost.toFixed(4)}</p>
-  </div>
-) : (
-  <div className="stats"><p>No stats generated yet.</p></div>
-)}      
+          {/* Tasks Here */}
+          <h2 className="title">Tasks</h2>
+          <ul className="task-list">
+            {tasks && tasks.map((task, index) => (
+              <li key={index}>
+                <span>{task.title}</span>
+                <span>{task.status}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Stats Here */}
+          <h2 className="title">Stats</h2>
+          {stats ? (
+            <div className="stats">
+              <p>
+                <span>Total Tokens: </span>
+                <span>{stats.totalTokenCount}</span>
+              </p>
+              <p>
+                <span>Total Cost: </span>
+                <span>${stats.totalCost.toFixed(4)}</span>
+              </p>
+              <p>
+                <span>Duration: </span>
+                <span>{stats.duration} ms</span>
+              </p>
+            </div>
+          ) : (
+            <div className="stats"><p className="stats-info">ℹ️ No stats generated yet.</p></div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
