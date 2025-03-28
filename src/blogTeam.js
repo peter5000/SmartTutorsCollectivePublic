@@ -10,8 +10,8 @@ const searchTool = new TavilySearchResults({
 // Define the Research Agent
 const researchAgent = new Agent({
     name: 'Ava',
-    role: 'News Researcher',
-    goal: 'Find and summarize the latest news on a given topic',
+    role: 'Online Subject Researcher',
+    goal: 'Find online questions on a given topic',
     background: 'Experienced in data analysis and information gathering',
     tools: [searchTool]
   });
@@ -19,24 +19,33 @@ const researchAgent = new Agent({
   // Define the Writer Agent
   const writerAgent = new Agent({
     name: 'Kai',
-    role: 'Content Creator',
-    goal: 'Create engaging blog posts based on provided information',
-    background: 'Skilled in writing and content creation',
+    role: 'Quiz Creator',
+    goal: 'Create multiple choice exams based on provided information',
+    background: 'Skilled in exam creation',
     tools: []
   });
 
   // Define Tasks
 const researchTask = new Task({
-    title: 'Latest news research',
-    description: 'Research the latest news on the topic: {topic}',
-    expectedOutput: 'A summary of the latest news and key points on the given topic',
+    title: 'Subject research',
+    description: 'Find online questions on the given topic: {topic}',
+    expectedOutput: 'A list of questions that exist',
     agent: researchAgent
   });
   
   const writingTask = new Task({
-    title: 'Blog post writing',
-    description: 'Write a blog post about {topic} based on the provided research',
-    expectedOutput: 'An engaging blog post summarizing the latest news on the topic in Markdown format',
+    title: 'Quiz creation',
+    description: 'Create a multiple choice quiz about {topic} based on the provided research',
+    expectedOutput: `Create a 10 question multiple choice quiz, with correct answers in json format. The json format should be: 
+    {\"quiz\": 
+      \"questions\": [
+        {
+          \"question\": \"QUESTION 1 HERE\",
+          \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...]
+          \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3
+        }
+      ]
+    }`,
     agent: writerAgent
   });
 
