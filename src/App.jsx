@@ -12,7 +12,9 @@ import Chat from './features/chat/Chat';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
- /* // Setting up State
+
+// AGENT CODE --------------------------------------------------------------------------------------------
+ // Setting up State
   const [topic, setTopic] = useState('');
   const [blogPost, setBlogPost] = useState('');
   const [stats, setStats] = useState(null);
@@ -35,10 +37,11 @@ function App() {
     setStats(null);
 
     try {
-      const output = await blogTeam.start({ topic });
+      const output = await blogTeam.start("math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
-
+        console.log(output.result)
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: output.result }]);
         const { costDetails, llmUsageStats, duration } = output.stats;
         setStats({
           duration: duration,
@@ -51,7 +54,9 @@ function App() {
     } catch (error) {
       console.error('Error generating blog post:', error);
     }
-  };*/
+  };
+
+  // FRONTEND CODE --------------------------------------------------------------------------------------------
   const [searchInput, setSearchInput] = useState('');
   const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please select your age.' }]);
   const [step, setStep] = useState(0);
@@ -86,7 +91,7 @@ function App() {
         break;
       case 4:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        break;
+        generateBlogPost()
       default:
         break;
     }
