@@ -19,9 +19,9 @@ if (!fs.existsSync(folderPath)) {
 // API to save student data
 app.post('/save-student', (req, res) => {
     
-    const { studentId, email, age, grade } = req.body;
+    const { email, age, grade } = req.body;
 
-    if (!studentId || !email || !age || !grade) {
+    if (!email || !age || !grade) {
         return res.status(400).json({ message: 'Missing student data' });
     }
 
@@ -36,17 +36,59 @@ app.post('/save-student', (req, res) => {
     }
 
     // Update student record
-    students[studentId] = {
-        email,
+    students[email] = {
         age,
         grade,
-        lastInteractedWith: new Date().toISOString()
+        lastLogin: new Date().toISOString()
     };
 
     // Write updated data to the file
     fs.writeFileSync(filePath, JSON.stringify(students, null, 2), 'utf8');
 
-    res.json({ message: `Student ${studentId} data saved.` });
+    res.json({ message: `Student ${email} data saved.` });
+});
+// Route to get the student data
+app.get('/read-students', (req, res) => {
+    // Check if the file exists
+    if (fs.existsSync(filePath)) {
+        // Read the data from the file
+        const data = fs.readFileSync(filePath, 'utf8');
+
+        // If the data exists and is not empty
+        if (data) {
+            try {
+                // Parse the JSON data
+                const students = JSON.parse(data);
+                return res.json(students); // Return the students data as JSON
+            } catch (error) {
+                return res.status(500).json({ message: 'Error parsing data' });
+            }
+        }
+    }
+    // If file doesn't exist or no data found
+    return res.status(404).json({ message: 'No student data found' });
+});
+
+app.get('/get-student', (req, res) => {
+    const { email } = req.query; // Get email from query params
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'No student data found' });
+    }
+
+    // Read student data from the file
+    const data = fs.readFileSync(filePath, 'utf8');
+    const students = JSON.parse(data);
+
+    if (!students[email]) {
+        return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.json({ email, ...students[email] });
 });
 
 // Start the server

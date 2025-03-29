@@ -1,14 +1,12 @@
 {
-  "1": {
-    "email": "1",
-    "age": "1",
+  "email": {
+    "age": "5",
     "grade": "1",
-    "lastInteractedWith": "2025-03-29T02:14:49.671Z"
+    "lastLogin": "2025-03-29T15:30:04.604Z"
   },
-  "10": {
-    "email": "1",
-    "age": "1",
+  "email@test.com": {
+    "age": "5",
     "grade": "1",
-    "lastInteractedWith": "2025-03-29T02:22:48.619Z"
+    "lastLogin": "2025-03-29T15:33:48.860Z"
   }
 }

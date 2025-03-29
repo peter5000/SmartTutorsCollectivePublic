@@ -33,11 +33,11 @@ function App() {
     teamWorkflowStatus: state.teamWorkflowStatus
   }));
 
-  const [studentId, setStudentId] = useState('10');
-  const [email, setEmail] = useState('1');
-  const [age, setAge] = useState('1');
+  const [email, setEmail] = useState('email@test.com');
+  const [age, setAge] = useState('5');
   const [grade, setGrade] = useState('1');
-
+  const [student, setStudent] = useState(null);
+  const [error, setError] = useState('');
 
   const generateBlogPost = async () => {
     setBlogPost('');
@@ -45,7 +45,7 @@ function App() {
 
     try {
     
-      const studentData = { studentId, email, age, grade };
+      const studentData = { email, age, grade };
 
       const response = await axios.post('http://localhost:5000/save-student', studentData);
       console.log(response.data.message);  // Success message
@@ -69,6 +69,17 @@ function App() {
     }
   };
 
+  const fetchStudent = async () => {
+    try {
+        const response = await axios.get(`http://localhost:5000/get-student?email=${email}`);
+        setStudent(response.data);
+        setError('');
+    } catch (err) {
+        setStudent(null);
+        setError(err.response?.data?.message || 'Error fetching student data');
+    }
+};
+
   // FRONTEND CODE --------------------------------------------------------------------------------------------
   const [searchInput, setSearchInput] = useState('');
   const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email.' }]);
@@ -86,6 +97,9 @@ function App() {
   };
 
   const handleSelect = (key, value) => {
+    setEmail(value);
+    fetchStudent();
+  
     setSelections((prev) => ({ ...prev, [key]: value }));
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
@@ -95,7 +109,7 @@ function App() {
     switch (step + 1) {
       case 1:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your age.' }]);
-               break;
+        break;
       case 2:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your grade.' }]);
         break;
@@ -106,12 +120,13 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
       case 5:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        generateBlogPost();
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]); 
+        generateBlogPost();        
         break;
       default:
         break;
     }
+  
   };
 
   const handleKeyPress = (e, key) => {
@@ -189,7 +204,18 @@ function App() {
         </form>
       )}
       {/* <ChatIconComponent onClick={() => setShowChat(!showChat)} /> */}
+      <div className = 'name-container'>
+      {student && (
+                <div>
+                    <h2>Student Details:</h2>
+                    <p><strong>Age:</strong> {student.age}</p>
+                    <p><strong>Grade:</strong> {student.grade}</p>
+                    <p><strong>Last Interacted On:</strong> {student.lastLogin}</p>
+                </div>
+            )}
+      </div> 
     </div>
+    
   );
 
   // return (
