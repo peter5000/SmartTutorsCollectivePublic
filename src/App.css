@@ -48,3 +48,44 @@ body, html {
   padding: 0px 0; /* Added padding for more space */
 }
 }
+
+.quiz-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.question-container {
+  margin-bottom: 20px;
+}
+
+.option-container {
+  margin: 10px 0;
+}
+
+.results-container {
+  margin-top: 20px;
+  background-color: #e0f7fa;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.result-container {
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

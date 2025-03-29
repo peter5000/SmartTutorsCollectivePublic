@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import DevUtils from './DevUtils';
 import { blogTeam } from './blogTeam';
+import { imageTeam } from './generateFigure';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
@@ -10,6 +11,7 @@ import GradeSelector from './features/selection/GradeSelector';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import Chat from './features/chat/Chat';
+import Quiz from './features/quiz/Quiz';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
   const [topic, setTopic] = useState('');
   const [blogPost, setBlogPost] = useState('');
   const [stats, setStats] = useState(null);
+  const [question, setQuestion] = useState('');
+  const [quiz, setQuiz] = useState(null);
 
   // Connecting to the KaibanJS Store
   const useTeamStore = blogTeam.useStore();
@@ -50,10 +54,10 @@ function App() {
       const response = await axios.post('http://localhost:5000/save-student', studentData);
       console.log(response.data.message);  // Success message
 
-      const output = await blogTeam.start("math");
+      const output = await blogTeam.start("8th grade geometry math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
-        console.log(output.result)
+        console.log(output.result);
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: output.result }]);
         const { costDetails, llmUsageStats, duration } = output.stats;
         setStats({
@@ -61,6 +65,22 @@ function App() {
           totalTokenCount: llmUsageStats.inputTokens + llmUsageStats.outputTokens,
           totalCost: costDetails.totalCost
         });
+        setQuestion(JSON.parse(output.result)["quiz"]["questions"][0][question]);
+        document.getElementById('question').hidden = false;
+      } else if (output.status === 'BLOCKED') {
+        console.log(`Workflow is blocked, unable to complete`);
+      }
+    } catch (error) {
+      console.error('Error generating blog post:', error);
+    }
+  };
+
+  const generateImage = async () => {
+    try {
+      console.log("inside generate image: ", question)
+      const output = await imageTeam.start({ "question" : question });
+      if (output.status === 'FINISHED') {
+        console.log(output.result);
       } else if (output.status === 'BLOCKED') {
         console.log(`Workflow is blocked, unable to complete`);
       }
@@ -103,7 +123,7 @@ function App() {
     setSelections((prev) => ({ ...prev, [key]: value }));
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
-    setStepInput(''); // Clear the step input after each selection
+    setStepInput('');
 
     // Add agent's prompt for the next step
     switch (step + 1) {
@@ -120,8 +140,21 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
       case 5:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]); 
-        generateBlogPost();        
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
+        passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
+        const quizObj = generateBlogPost();
+        setQuiz(quizObj.quiz);
+        // Function 1 -- first time experience 
+        // call the agent method with question, expected ans and received ans - receive categorized student level and score
+        // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
+        // + Display how the student wants to learn(WIP:pictures, text, audio) 
+
+        // Function 2 - returned user -- repeated every time
+        // Call the agent with student details, categarized level and preferred learning method
+        // Gives - Quiz on the specific topic, level and subject
+
+        //Function 3 - Post submission of quiz
+        // Send back quiz response and ask for new categorized level and score and display remaining/new topics
         break;
       default:
         break;
@@ -133,6 +166,11 @@ function App() {
     if (e.key === 'Enter') {
       handleSelect(key, e.target.value);
     }
+  };
+
+  // TODO: Should be updated and call Agent to generate the quiz
+  const passSelectionsToFunction = () => {
+    console.log('Passing selections to another function:', selections.email);
   };
 
   const renderStep = () => {
@@ -181,7 +219,12 @@ function App() {
       case 4:
         return <LevelSelector onSelect={handleSelect} />;
       case 5:
-        return null; // No additional message here
+        // return
+        return (
+          <div id="question" hidden={true}>
+            <button onClick={generateImage}>Generate Image</button>
+          </div>
+        );
       default:
         return null;
     }
