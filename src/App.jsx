@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import DevUtils from './DevUtils';
 import { blogTeam } from './blogTeam';
+import { imageTeam } from './generateFigure';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
@@ -19,6 +20,7 @@ function App() {
   const [topic, setTopic] = useState('');
   const [blogPost, setBlogPost] = useState('');
   const [stats, setStats] = useState(null);
+  const [question, setQuestion] = useState('');
 
   // Connecting to the KaibanJS Store
   const useTeamStore = blogTeam.useStore();
@@ -38,22 +40,19 @@ function App() {
   const [age, setAge] = useState('1');
   const [grade, setGrade] = useState('1');
 
-
   const generateBlogPost = async () => {
     setBlogPost('');
     setStats(null);
 
     try {
-    
       const studentData = { studentId, email, age, grade };
-
       const response = await axios.post('http://localhost:5000/save-student', studentData);
       console.log(response.data.message);  // Success message
 
-      const output = await blogTeam.start("math");
+      const output = await blogTeam.start("8th grade geometry math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
-        console.log(output.result)
+        console.log(output.result);
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: output.result }]);
         const { costDetails, llmUsageStats, duration } = output.stats;
         setStats({
@@ -61,6 +60,22 @@ function App() {
           totalTokenCount: llmUsageStats.inputTokens + llmUsageStats.outputTokens,
           totalCost: costDetails.totalCost
         });
+        setQuestion(JSON.parse(output.result)["quiz"]["questions"][0][question]);
+        document.getElementById('question').hidden = false;
+      } else if (output.status === 'BLOCKED') {
+        console.log(`Workflow is blocked, unable to complete`);
+      }
+    } catch (error) {
+      console.error('Error generating blog post:', error);
+    }
+  };
+
+  const generateImage = async () => {
+    try {
+      console.log("inside generate image: ", question)
+      const output = await imageTeam.start({ "question" : question });
+      if (output.status === 'FINISHED') {
+        console.log(output.result);
       } else if (output.status === 'BLOCKED') {
         console.log(`Workflow is blocked, unable to complete`);
       }
@@ -166,7 +181,12 @@ function App() {
       case 4:
         return <LevelSelector onSelect={handleSelect} />;
       case 5:
-        return null; // No additional message here
+        // return
+        return (
+          <div id="question" hidden={true}>
+            <button onClick={generateImage}>Generate Image</button>
+          </div>
+        );
       default:
         return null;
     }
