@@ -3,6 +3,7 @@ import './App.css';
 import DevUtils from './DevUtils';
 import { blogTeam } from './blogTeam';
 import ReactMarkdown from 'react-markdown';
+import axios from 'axios';
 
 import AgeSelector from './features/selection/AgeSelector';
 import GradeSelector from './features/selection/GradeSelector';
@@ -32,11 +33,23 @@ function App() {
     teamWorkflowStatus: state.teamWorkflowStatus
   }));
 
+  const [studentId, setStudentId] = useState('10');
+  const [email, setEmail] = useState('1');
+  const [age, setAge] = useState('1');
+  const [grade, setGrade] = useState('1');
+
+
   const generateBlogPost = async () => {
     setBlogPost('');
     setStats(null);
 
     try {
+    
+      const studentData = { studentId, email, age, grade };
+
+      const response = await axios.post('http://localhost:5000/save-student', studentData);
+      console.log(response.data.message);  // Success message
+
       const output = await blogTeam.start("math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
@@ -58,7 +71,7 @@ function App() {
 
   // FRONTEND CODE --------------------------------------------------------------------------------------------
   const [searchInput, setSearchInput] = useState('');
-  const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please select your age.' }]);
+  const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email.' }]);
   const [step, setStep] = useState(0);
   const [selections, setSelections] = useState({});
   const [stepInput, setStepInput] = useState('');
@@ -81,17 +94,21 @@ function App() {
     // Add agent's prompt for the next step
     switch (step + 1) {
       case 1:
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your age.' }]);
+               break;
+      case 2:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your grade.' }]);
         break;
-      case 2:
+      case 3:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select the subject you are interested in.' }]);
         break;
-      case 3:
+      case 4:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
-      case 4:
+      case 5:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        generateBlogPost()
+        generateBlogPost();
+        break;
       default:
         break;
     }
@@ -108,6 +125,19 @@ function App() {
       case 0:
         return (
           <div className="input-container">
+            <label>Email: </label>
+            <input
+              type="text"
+              value={stepInput}
+              onChange={(e) => setStepInput(e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e, 'email')}
+              placeholder="Enter your email..."
+            />
+          </div>
+        );
+        case 1:
+        return (
+          <div className="input-container">
             <label>Age: </label>
             <input
               type="number"
@@ -118,7 +148,7 @@ function App() {
             />
           </div>
         );
-      case 1:
+      case 2:
         return (
           <div className="input-container">
             <label>Grade: </label>
@@ -131,11 +161,11 @@ function App() {
             />
           </div>
         );
-      case 2:
-        return <SubjectSelector onSelect={handleSelect} />;
       case 3:
-        return <LevelSelector onSelect={handleSelect} />;
+        return <SubjectSelector onSelect={handleSelect} />;
       case 4:
+        return <LevelSelector onSelect={handleSelect} />;
+      case 5:
         return null; // No additional message here
       default:
         return null;
