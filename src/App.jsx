@@ -11,6 +11,7 @@ import GradeSelector from './features/selection/GradeSelector';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import Chat from './features/chat/Chat';
+import Quiz from './features/quiz/Quiz';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
   const [blogPost, setBlogPost] = useState('');
   const [stats, setStats] = useState(null);
   const [question, setQuestion] = useState('');
+  const [quiz, setQuiz] = useState(null);
 
   // Connecting to the KaibanJS Store
   const useTeamStore = blogTeam.useStore();
@@ -104,7 +106,7 @@ function App() {
     setSelections((prev) => ({ ...prev, [key]: value }));
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
-    setStepInput(''); // Clear the step input after each selection
+    setStepInput('');
 
     // Add agent's prompt for the next step
     switch (step + 1) {
@@ -122,7 +124,20 @@ function App() {
         break;
       case 5:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        generateBlogPost();
+        passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
+        const quizObj = generateBlogPost();
+        setQuiz(quizObj.quiz);
+        // Function 1 -- first time experience 
+        // call the agent method with question, expected ans and received ans - receive categorized student level and score
+        // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
+        // + Display how the student wants to learn(WIP:pictures, text, audio) 
+
+        // Function 2 - returned user -- repeated every time
+        // Call the agent with student details, categarized level and preferred learning method
+        // Gives - Quiz on the specific topic, level and subject
+
+        //Function 3 - Post submission of quiz
+        // Send back quiz response and ask for new categorized level and score and display remaining/new topics
         break;
       default:
         break;
@@ -133,6 +148,11 @@ function App() {
     if (e.key === 'Enter') {
       handleSelect(key, e.target.value);
     }
+  };
+
+  // TODO: Should be updated and call Agent to generate the quiz
+  const passSelectionsToFunction = () => {
+    console.log('Passing selections to another function:', selections.email);
   };
 
   const renderStep = () => {
