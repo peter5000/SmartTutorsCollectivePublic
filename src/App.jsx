@@ -99,22 +99,33 @@ function App() {
 
   const handleSaveAnswer = (selectedOption) => {
     setSelectedAnswer(selectedOption);
-    console.log('Selected Answer:', selectedOption); // Log the selected answer for debugging
+    console.log('Selected Answer:', selectedOption);
   };
 
   const fetchStudent = async (email) => {
     try {
-        const response = await axios.get(`http://localhost:5000/get-student?email=${email}`);
-        setStudent(response.data);
-        setError('');
+      const response = await axios.get(`http://localhost:5000/get-student?email=${email}`);
+      setStudent(response.data);
+      setError('');
+      setSelections((prev) => ({
+        ...prev,
+        email: response.data.email,
+        age: response.data.age,
+        grade: response.data.grade,
+      }));
+      setStep(3);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'Agent', text: 'Welcome back! Please select the subject you are interested in.' },
+      ]);
+      return true; // Student found
     } catch (err) {
-      let studentData = {   age: '',
-        grade: '',
-        lastLogin: '',};
-        setStudent(studentData);
-        setError(err.response?.data?.message || 'Error fetching student data');
+      const studentData = { email, age: '', grade: '', lastLogin: '' };
+      setStudent(studentData);
+      setError(err.response?.data?.message || 'Student not found. Please continue.');
+      return false; // Student not found
     }
-};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,9 +141,16 @@ function App() {
   }
 
 
-  const handleSelect = (key, value) => {
+  const handleSelect = async (key, value) => {
      
     setSelections((prev) => ({ ...prev, [key]: value }));
+
+    if (key === 'email') {
+      const studentFound = await fetchStudent(value);
+      if(studentFound) {
+        return;
+      }
+    }
     
     fetchStudent(selections.email); // TODO:: Sreya to fetch this response and execute below steps if we don't find the student in our backend data
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
@@ -155,16 +173,21 @@ function App() {
         break;
       case 5:
         { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        let studentData = { email:selections.email, age:selections.age, grade:selections.grade };
-        saveStudent(studentData)
+        const currentDate = new Date().toISOString().split('T')[0]; // Get current date
+      const studentData = {
+        email: selections.email,
+        age: selections.age,
+        grade: selections.grade,
+        lastLogin: currentDate,
+      };
+        saveStudent(studentData);
+        setStudent(studentData);
       
         passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
         // Use await to handle the asynchronous function
       
         const quizObj = generateBlogPost().then(quizObj => {
-          console.log('Honey Quiz Object1:', JSON.stringify(quizObj, null, 2)); // Log the quiz object as JSON
         if (quizObj.quiz && quizObj.quiz.questions) {
-          console.log('Questions:', JSON.stringify(quizObj.quiz.questions, null, 2)); // Log the questions for debugging
           setQuiz(quizObj.quiz);
         } else {
           console.error('Quiz object does not contain questions');

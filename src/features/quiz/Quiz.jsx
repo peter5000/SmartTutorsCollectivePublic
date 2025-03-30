@@ -15,7 +15,7 @@ const Quiz = ({ quiz, onSaveAnswer }) => {
 
   const handleSubmit = () => {
     if (selectedOption !== null) {
-      onSaveAnswer(selectedOption);
+      onSaveAnswer(selectedOption+1);
     }
   };
 
