@@ -11,7 +11,7 @@ import GradeSelector from './features/selection/GradeSelector';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import Chat from './features/chat/Chat';
-//import Quiz from './features/quiz/Quiz';
+import Quiz from './features/quiz/Quiz';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -23,6 +23,7 @@ function App() {
   const [stats, setStats] = useState(null);
   const [question, setQuestion] = useState('');
   const [quiz, setQuiz] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   // Connecting to the KaibanJS Store
   const useTeamStore = blogTeam.useStore();
@@ -70,8 +71,10 @@ function App() {
           totalTokenCount: llmUsageStats.inputTokens + llmUsageStats.outputTokens,
           totalCost: costDetails.totalCost
         });
+        const quizOjb = JSON.parse(output.result);
         setQuestion(JSON.parse(output.result)["quiz"]["questions"][0][question]);
         document.getElementById('question').hidden = false;
+        return quizOjb;
       } else if (output.status === 'BLOCKED') {
         console.log(`Workflow is blocked, unable to complete`);
       }
@@ -92,6 +95,11 @@ function App() {
     } catch (error) {
       console.error('Error generating blog post:', error);
     }
+  };
+
+  const handleSaveAnswer = (selectedOption) => {
+    setSelectedAnswer(selectedOption);
+    console.log('Selected Answer:', selectedOption); // Log the selected answer for debugging
   };
 
   const fetchStudent = async (email) => {
@@ -146,12 +154,23 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
       case 5:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
+        { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
         let studentData = { email:selections.email, age:selections.age, grade:selections.grade };
         saveStudent(studentData)
       
         passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
-         const quizObj = generateBlogPost();
+        // Use await to handle the asynchronous function
+      
+        const quizObj = generateBlogPost().then(quizObj => {
+          console.log('Honey Quiz Object1:', JSON.stringify(quizObj, null, 2)); // Log the quiz object as JSON
+        if (quizObj.quiz && quizObj.quiz.questions) {
+          console.log('Questions:', JSON.stringify(quizObj.quiz.questions, null, 2)); // Log the questions for debugging
+          setQuiz(quizObj.quiz);
+        } else {
+          console.error('Quiz object does not contain questions');
+        }
+    });
+
         // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience 
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
@@ -164,7 +183,7 @@ function App() {
 
         //Function 3 - Post submission of quiz
         // Send back quiz response and ask for new categorized level and score and display remaining/new topics
-        break;
+        break; }
       default:
         break;
     }
@@ -228,9 +247,9 @@ function App() {
       case 4:
         return <LevelSelector onSelect={handleSelect} />;
       case 5:
-        // return
         return (
           <div id="question" hidden={true}>
+             {quiz && <Quiz quiz={quiz} onSaveAnswer={handleSaveAnswer} />}
             <button onClick={generateImage}>Generate Image</button>
           </div>
         );
@@ -269,7 +288,7 @@ function App() {
         <h2>Student Details</h2>
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
-        <p><strong>Last Interacted On:</strong> {student.lastLogin}</p>
+        <p><strong>Last Activity:</strong> {student.lastLogin}</p>
       </div>
     )}
   </div>

@@ -219,3 +219,74 @@ button:hover {
   }
 }
 
+.quiz-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #333;
+}
+
+.quiz-question {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #555;
+  padding-left: 120px;
+}
+
+.quiz-options {
+  list-style-type: none;
+  padding: 0;
+}
+
+.quiz-option {
+  display: flex;
+   /* Ensures items are aligned properly */
+  justify-content: flex-start; /* Aligns items to the left */
+}
+
+.quiz-option label {
+  display: flex;
+  align-items: center; /* Aligns text with radio button */
+  font-size: 16px;
+  color: #333;
+  width: 100%;
+}
+
+.quiz-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+.quiz-option-text {
+  margin-left: 0; /* Ensure the text starts right after the radio button */
+}
+
+.quiz-submit {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  text-align: center; /* Center the text inside the button */
+}
+
+.quiz-submit:hover {
+  background-color: #0056b3;
+}align-items: center;
