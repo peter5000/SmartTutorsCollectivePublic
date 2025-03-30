@@ -269,7 +269,6 @@ function App() {
         <h2>Student Details</h2>
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
-        <p><strong>Last Interacted On:</strong> {student.lastLogin}</p>
       </div>
     )}
   </div>
