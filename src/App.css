@@ -1,91 +1,221 @@
+/* Reset and Base Styles */
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  color: #e0e0e0; /* Lighter text color for better readability */
+  background: linear-gradient(135deg, #111827 30%, #263238 70%); /* Darker, more subtle gradient */
+  background-attachment: fixed;
+  align-items: center;
+}
 
+/* Background Overlay */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('./assets/smarttutorsbackground.jpeg') no-repeat center center;
+  background-size: cover;
+  opacity: 0.15; /* Reduced opacity */
+}
+
+/* Header Styles - Moved to Top */
+.header {
+  text-align: center;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.8); /* Darker, semi-transparent background */
+  color: #a5f3fc; /* Light blue text for header */
+  font-size: 28px;
+  font-weight: 600; /* Slightly lighter bold */
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  position: sticky; /* Sticky header */
+  top: 0;
+  z-index: 100; /* Ensure it's above other elements */
+}
+
+/* Main Container */
 .app-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 20px;
-}
-
-.chat-container {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 40px;
   width: 100%;
-  max-width: 600px;
-  margin-bottom: 20px;
+  max-width: 1400px;
+  gap: 30px;
+  margin-top: 20px; /* Added margin to separate from the header */
 }
 
-.chat-form {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Chat Container */
+.chat-container {
+  background: rgba(255, 255, 255, 0.1); /* Slightly less opaque background */
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  width: 100%;
+  max-width: 750px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Student Details - Positioned on the Right */
+.student-details {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  width: 100%;
+  max-width: 450px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Student Details Title */
+.student-details h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  border-bottom: 3px solid #6ee7b7; /* Lighter green */
+  padding-bottom: 6px;
+  color: #a5f3fc;
+}
+
+/* Student Details Text */
+.student-details p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+/* Chat Messages */
 .chat-message {
-  margin-bottom: 15px; /* Adjusted spacing between messages */
+  margin-bottom: 15px;
 }
-
 .chat-message strong {
   display: block;
+  font-weight: bold;
   margin-bottom: 5px;
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 8px 0;
 }
 
-.input-container {
-  margin: 0px 0; /* Added space before and after input boxes */
-  padding: 0px 0; /* Added padding for more space */
-}
-}
-
-.quiz-container {
-  background-color: #f9f9f9;
+/* Input Fields */
+input {
+  width: 95%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 2px solid #6ee7b7; /* Lighter green */
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 20px auto;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+input::placeholder {
+  color: #9ca3af; /* Darker placeholder text */
+}
+input:focus {
+  outline: none;
+  border-color: #34d399; /* Even lighter green on focus */
 }
 
-.question-container {
-  margin-bottom: 20px;
-}
-
-.option-container {
-  margin: 10px 0;
-}
-
-.results-container {
-  margin-top: 20px;
-  background-color: #e0f7fa;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.result-container {
-  margin-bottom: 10px;
-}
-
+/* Buttons */
 button {
-  background-color: #007bff;
-  color: white;
+  background-color: #6ee7b7; /* Lighter green */
+  color: #111827; /* Darker text on button */
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 12px 24px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 18px;
+  transition: 0.3s;
+}
+button:hover {
+  background-color: #34d399;
 }
 
-button:hover {
-  background-color: #0056b3;
+/* Responsive Design */
+@media screen and (max-width: 900px) {
+  .app-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chat-container, .student-details {
+    width: 90%;
+    max-width: none;
+  }
 }
+
+/* Subject Selection Container */
+.subject-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+  margin-top: 20px;
+}
+
+/* Label Styling */
+.subject-selection label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+.subject-selection label:hover {
+  color: #6ee7b7;
+}
+
+/* Radio Button Custom Styling */
+.subject-selection input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6ee7b7;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.subject-selection input[type="radio"]:checked {
+  background-color: #6ee7b7;
+  border-color: #34d399;
+}
+.subject-selection input[type="radio"]::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.subject-selection input[type="radio"]:checked::before {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 600px) {
+  .subject-selection {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
+

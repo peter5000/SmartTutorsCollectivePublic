@@ -38,7 +38,11 @@ function App() {
   }));
 
  
-  const [student, setStudent] = useState(null);
+  const [student, setStudent] = useState({
+    age: '',
+    grade: '',
+    lastLogin: '',
+  });
   const [error, setError] = useState('');
  // FRONTEND CODE --------------------------------------------------------------------------------------------
  const [searchInput, setSearchInput] = useState('');
@@ -55,7 +59,7 @@ function App() {
 
     try {
     
-            const output = await blogTeam.start("8th grade geometry math");
+      const output = await blogTeam.start("8th grade geometry math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
         console.log(output.result);
@@ -96,7 +100,10 @@ function App() {
         setStudent(response.data);
         setError('');
     } catch (err) {
-        setStudent(null);
+      let studentData = {   age: '',
+        grade: '',
+        lastLogin: '',};
+        setStudent(studentData);
         setError(err.response?.data?.message || 'Error fetching student data');
     }
 };
@@ -233,33 +240,42 @@ function App() {
   };
 
   return (
+    <div>
+    <div className="header">
+    Smart Tutors Collective
+  </div>
     <div className="app-container">
-      <div className="chat-container">
-        <Chat messages={messages} />
-        {renderStep()}
+  <div className="chat-container">
+    <Chat messages={messages} />
+    {renderStep()}
+  </div>
+
+  {showChat && (
+    <form onSubmit={handleSubmit} className="chat-form">
+      <input
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        placeholder="Type your query here..."
+      />
+      <button type="submit">Send</button>
+    </form>
+  )}
+
+  {/* <ChatIconComponent onClick={() => setShowChat(!showChat)} /> */}
+
+  <div className="student-card">
+    {student && (
+      <div className="student-details">
+        <h2>Student Details</h2>
+        <p><strong>Age:</strong> {student.age}</p>
+        <p><strong>Grade:</strong> {student.grade}</p>
+        <p><strong>Last Interacted On:</strong> {student.lastLogin}</p>
       </div>
-      {showChat && (
-        <form onSubmit={handleSubmit} className="chat-form">
-          <input
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Type your query here..."
-          />
-          <button type="submit">Send</button>
-        </form>
-      )}
-      {/* <ChatIconComponent onClick={() => setShowChat(!showChat)} /> */}
-      <div className = 'name-container'>
-      {student && (
-                <div>
-                    <h2>Student Details:</h2>
-                    <p><strong>Age:</strong> {student.age}</p>
-                    <p><strong>Grade:</strong> {student.grade}</p>
-                    <p><strong>Last Interacted On:</strong> {student.lastLogin}</p>
-                </div>
-            )}
-      </div> 
-    </div>
+    )}
+  </div>
+</div>
+
+</div>
     
   );
 

@@ -5,7 +5,7 @@ const LevelSelector = ({ onSelect }) => {
 
   return (
     <div>
-      <div>
+      <div className="subject-selection">
         {levels.map((level) => (
           <label key={level}>
             <input
