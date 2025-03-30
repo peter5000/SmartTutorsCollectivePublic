@@ -11,7 +11,7 @@ import GradeSelector from './features/selection/GradeSelector';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import Chat from './features/chat/Chat';
-import Quiz from './features/quiz/Quiz';
+//import Quiz from './features/quiz/Quiz';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -37,11 +37,17 @@ function App() {
     teamWorkflowStatus: state.teamWorkflowStatus
   }));
 
-  const [email, setEmail] = useState('email@test.com');
-  const [age, setAge] = useState('5');
-  const [grade, setGrade] = useState('1');
+ 
   const [student, setStudent] = useState(null);
   const [error, setError] = useState('');
+ // FRONTEND CODE --------------------------------------------------------------------------------------------
+ const [searchInput, setSearchInput] = useState('');
+ const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email.' }]);
+ const [step, setStep] = useState(0);
+ const [selections, setSelections] = useState({});
+ const [stepInput, setStepInput] = useState('');
+ const [showChat, setShowChat] = useState(false);
+
 
   const generateBlogPost = async () => {
     setBlogPost('');
@@ -49,12 +55,7 @@ function App() {
 
     try {
     
-      const studentData = { email, age, grade };
-
-      const response = await axios.post('http://localhost:5000/save-student', studentData);
-      console.log(response.data.message);  // Success message
-
-      const output = await blogTeam.start("8th grade geometry math");
+            const output = await blogTeam.start("8th grade geometry math");
       if (output.status === 'FINISHED') {
         setBlogPost(output.result);
         console.log(output.result);
@@ -89,7 +90,7 @@ function App() {
     }
   };
 
-  const fetchStudent = async () => {
+  const fetchStudent = async (email) => {
     try {
         const response = await axios.get(`http://localhost:5000/get-student?email=${email}`);
         setStudent(response.data);
@@ -100,14 +101,6 @@ function App() {
     }
 };
 
-  // FRONTEND CODE --------------------------------------------------------------------------------------------
-  const [searchInput, setSearchInput] = useState('');
-  const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email.' }]);
-  const [step, setStep] = useState(0);
-  const [selections, setSelections] = useState({});
-  const [stepInput, setStepInput] = useState('');
-  const [showChat, setShowChat] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (searchInput.trim()) {
@@ -116,11 +109,17 @@ function App() {
     }
   };
 
+  const saveStudent = async (studentData) => {
+    const response = await axios.post('http://localhost:5000/save-student', studentData);
+      console.log(response.data.message);  // Success message
+  }
+
+
   const handleSelect = (key, value) => {
-    setEmail(value);
-    fetchStudent();
-  
+     
     setSelections((prev) => ({ ...prev, [key]: value }));
+    
+    fetchStudent(selections.email); // TODO:: Sreya to fetch this response and execute below steps if we don't find the student in our backend data
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
     setStepInput('');
@@ -141,9 +140,12 @@ function App() {
         break;
       case 5:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
+        let studentData = { email:selections.email, age:selections.age, grade:selections.grade };
+        saveStudent(studentData)
+      
         passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
-        const quizObj = generateBlogPost();
-        setQuiz(quizObj.quiz);
+         const quizObj = generateBlogPost();
+        // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience 
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
         // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
