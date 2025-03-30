@@ -33,7 +33,7 @@ body::before {
   font-weight: 600; /* Slightly lighter bold */
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  width: 100%;
+  width: 90%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Softer shadow */
   position: sticky; /* Sticky header */
   top: 0;
@@ -44,7 +44,7 @@ body::before {
 .app-container {
   display: flex;
   padding: 40px;
-  width: 100%;
+  width: 90%;
   max-width: 1400px;
   gap: 30px;
   margin-top: 20px; /* Added margin to separate from the header */
@@ -56,7 +56,7 @@ body::before {
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 25px;
-  width: 100%;
+  width: 90%;
   max-width: 750px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
