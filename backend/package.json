@@ -10,9 +10,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/community": "^0.3.38",
+    "@langchain/core": "^0.3.43",
+    "@langchain/langgraph": "^0.0.34",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
+    "kaibanjs": "^0.18.0",
     "path": "^0.12.7"
   }
 }

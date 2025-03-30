@@ -1,3 +1,5 @@
+const { createQuizGenTeam, createQuizEvalTeam } = require('./agents');
+const readline = require('readline');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -89,6 +91,42 @@ app.get('/get-student', (req, res) => {
     }
 
     res.json({ email, ...students[email] });
+});
+
+
+app.post('/generate-quiz', async (req, res) => {
+    console.log(req.body);
+    try {
+        const output = await createQuizGenTeam("Math", 3, 2, "Intermediate").start()
+        if (output.status === 'FINISHED') {
+          console.log('\nGenerated Blog Post:');
+          console.log(output.result);
+          res.type('json');
+          res.send(output.result);
+        } else if (output.status === 'BLOCKED') {
+          console.log('Workflow is blocked, unable to complete');
+        }
+      } catch (error) {
+        console.error('Error generating blog post:', error);
+      }
+});
+
+app.post('/evaluate-quiz', async (req, res) => {
+    const {grade, subject, age, level, quiz} = req.body;
+    try {
+        console.log(grade, subject, age, level, quiz);
+        const output = await createQuizEvalTeam(subject, age, grade, level, quiz).start()
+        if (output.status === 'FINISHED') {
+          console.log('\nGenerated Blog Post:');
+          console.log(output.result);
+          res.type('json');
+          res.send(output.result);
+        } else if (output.status === 'BLOCKED') {
+          console.log('Workflow is blocked, unable to complete');
+        }
+      } catch (error) {
+        console.error('Error generating blog post:', error);
+      }
 });
 
 // Start the server
