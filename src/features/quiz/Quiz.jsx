@@ -39,7 +39,7 @@ const Quiz = ({ quiz, onQuizComplete }) => {
   };
 
   const handleSubmit = () => {
-    console.log(questionsWithAnswers);
+    console.log(questionsWithAnswers); // TODO:: call evaluate quiz, show score and render strengths and weaknesses
   };
 
   const currentQuestion = questionsWithAnswers[currentQuestionIndex];
