@@ -95,9 +95,12 @@ app.get('/get-student', (req, res) => {
 
 
 app.post('/generate-quiz', async (req, res) => {
-    console.log(req.body);
+    const {grade, subject, age, level} = req.body;
+    if (!grade || !subject || !age || !level) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
     try {
-        const output = await createQuizGenTeam("Math", 3, 2, "Intermediate").start()
+        const output = await createQuizGenTeam(subject, age, grade, level).start()
         if (output.status === 'FINISHED') {
           console.log('\nGenerated Blog Post:');
           console.log(output.result);
@@ -113,8 +116,10 @@ app.post('/generate-quiz', async (req, res) => {
 
 app.post('/evaluate-quiz', async (req, res) => {
     const {grade, subject, age, level, quiz} = req.body;
+    if (!grade || !subject || !age || !level || !quiz) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
     try {
-        // console.log(grade, subject, age, level, quiz);
         const output = await createQuizEvalTeam(subject, age, grade, level, quiz).start()
         if (output.status === 'FINISHED') {
           console.log('\nGenerated Blog Post:');

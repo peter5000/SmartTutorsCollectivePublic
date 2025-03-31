@@ -76,7 +76,10 @@ quiz = JSON.stringify(quiz);
 subject = subject.toLowerCase(); 
   const writingTask = new Task({
     title: 'Quiz Feedback',
-    description: `You'll receive a 10 question multiple choice quiz in json format. You are to provide explanations for all incorrect answers, and analyze a participant's strengths and weaknesses in terms of topics based on correctly/incorrectly answered questions. The quiz is oriented towards an user of age ${age}, grade ${grade}, and self evaluated level of ${level}. The format is: 
+    description: `You'll receive a 10 question multiple choice quiz in json format. 
+    If a candidate incorrectly answered a question related to a topic, that topic should be added to a list of weaknesses. If a candidate answers all questions associated with a topic correctly, that topic should be added to strengths.
+    The topics in the strengths and weaknesses should not overlap. 
+    The quiz is oriented towards an user of age ${age}, grade ${grade}, and self evaluated level of ${level}. The format is: 
     {\"quiz\":
       \"questions\": [
         {
@@ -90,7 +93,10 @@ subject = subject.toLowerCase();
     }
       
     Here is the quiz: ${quiz}`,
-    expectedOutput: `An updated version of the quiz json, with explanations for each incorrect answer in json format. A list of weaknesses and strengths in terms of topics should be added to the json object. The json format should be:
+    expectedOutput: `An updated version of the quiz json, with explanations for each incorrect answer in json format. 
+    If a candidate incorrectly answered a question related to a topic, that topic should be added to a list of weaknesses. If a candidate answers all questions associated with a topic correctly, that topic should be added to strengths.
+    The topics in the strengths and weaknesses should not overlap. 
+    The json format should be:
     {\"quiz\":
       \"questions\": [
         {
@@ -102,8 +108,8 @@ subject = subject.toLowerCase();
           \"topic\": TOPIC
         }
       ],
-      \"strengths\": [list of strengths (topics)],
-      \"weaknesses\" [list of weaknesses (topics)]
+      \"topic_strengths\": [list of strengths (topics)],
+      \"topic_weaknesses\" [list of weaknesses (topics)]
     }`,
     agent: agentMap.get(subject),
     outputSchema: z.object({
@@ -118,8 +124,8 @@ subject = subject.toLowerCase();
                 explanation: z.string(),
                 topic: z.string(),
             })),
-        strengths: z.array(z.string()),
-        weaknesses: z.array(z.string())
+        topic_strengths: z.array(z.string()),
+        topic_weaknesses: z.array(z.string())
         })
       })
   });
