@@ -53,10 +53,6 @@ function App() {
     }
   };
 
-  const handleSaveAnswer = (selectedOption) => {
-    setSelectedAnswer(selectedOption);
-    console.log('Selected Answer:', selectedOption);
-  };
 
   const fetchStudent = async (email) => {
     try {
@@ -130,7 +126,7 @@ function App() {
         break;
       case 5:
         { 
-          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
+          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded and generating the quiz.' }]);
           const studentData = {
             email: selections.email,
             age: selections.age,
@@ -258,7 +254,7 @@ function App() {
       case 5:
         return (
           <div id="question" hidden={true}>
-             {quiz && <Quiz quiz={quiz} onSaveAnswer={handleSaveAnswer} />}
+             {quiz && <Quiz quiz={quiz} />}
              <button onClick={tempQuizFunc}>Skip to next stage</button>
           </div>
         );

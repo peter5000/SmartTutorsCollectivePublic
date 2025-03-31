@@ -330,3 +330,37 @@ input[type="radio"]::before {
 input[type="radio"]:checked::before {
   opacity: 1;
 }
+
+.quiz-navigation {
+  display: flex;
+  justify-content: space-between; /* Space out buttons evenly */
+  margin-top: 20px; /* Add some space between options and buttons */
+}
+
+.quiz-navigation-button,
+.quiz-submit { /* Apply same styles to both nav and submit buttons */
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+  background-color: #6ee7b7; /* Light green background */
+  color: #111827; /* Dark text for contrast */
+}
+
+.quiz-navigation-button:hover,
+.quiz-submit:hover {
+  background-color: #34d399; /* Darker green on hover */
+}
+
+.quiz-navigation-button:disabled {
+  background-color: #9ca3af; /* Greyed out when disabled */
+  color: #4b5563;
+  cursor: not-allowed;
+}
+
+/* Optional: Adjust spacing between buttons */
+.quiz-navigation-button:not(:last-child) {
+  margin-right: 10px;
+}

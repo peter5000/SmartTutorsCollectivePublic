@@ -34,7 +34,7 @@ function createQuizGenTeam(subject, age, grade, level) {
   subject = subject.toLowerCase();
   const writingTask = new Task({
     title: 'Quiz creation',
-    description: `Create a 10 question multiple choice quiz about ${subject}. The quiz should be oriented towards an audience of age ${age}, grade ${grade}, and self evaluated level of ${level}. The quiz should wield a diverse set of topics to evaluate a quiz taker's strengths and weaknesses.`,
+    description: `Create a 5 question multiple choice quiz about ${subject}. The quiz should be oriented towards an audience of age ${age}, grade ${grade}, and self evaluated level of ${level}. The quiz should wield a diverse set of topics to evaluate a quiz taker's strengths and weaknesses.`,
     expectedOutput: `Create a question multiple choice quiz, with correct answers in json format. The json format should be:
     {\"quiz\":
       {\"questions\": [

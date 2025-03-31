@@ -1,45 +1,88 @@
 import React, { useState } from 'react';
 
-const Quiz = ({ quiz, onSaveAnswer }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const Quiz = ({ quiz, onQuizComplete }) => {
+  
+  const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
+    quiz.questions.map((question) => ({
+      ...question,
+      chosenAnswer: null,
+    }))
+  );
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     return <div className="quiz-container">No quiz available</div>;
   }
 
-  const questionObj = quiz.questions[0];
+  const handleOptionChange = (optionIndex) => {
+    setQuestionsWithAnswers((prevQuestions) => {
+      const updatedQuestions = prevQuestions.map((q, index) => {
+        if (index === currentQuestionIndex) {
+          return { ...q, chosenAnswer: optionIndex };
+        }
+        return q;
+      });
+      return updatedQuestions;
+    });
+  };
 
-  const handleOptionChange = (index) => {
-    setSelectedOption(index);
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questionsWithAnswers.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
   };
 
   const handleSubmit = () => {
-    if (selectedOption !== null) {
-      onSaveAnswer(selectedOption+1);
-    }
+    console.log(questionsWithAnswers);
   };
+
+  const currentQuestion = questionsWithAnswers[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === questionsWithAnswers.length - 1;
 
   return (
     <div className="quiz-container">
       <div className="quiz-title">Quiz</div>
-      <p className="quiz-question">{questionObj.question}</p>
+      <p className="quiz-question">{currentQuestion.question}</p>
       <ul className="quiz-options">
-        {questionObj.options.map((option, index) => (
+        {currentQuestion.options.map((option, index) => (
           <li key={index} className="quiz-option">
-            <label>
+            <label htmlFor={`option-${currentQuestionIndex}-${index}`}>
               <input
                 type="radio"
-                name="quiz-option"
+                name={`question-${currentQuestionIndex}`}
+                id={`option-${currentQuestionIndex}-${index}`}
                 value={index}
-                checked={selectedOption === index}
+                checked={currentQuestion.chosenAnswer === index}
                 onChange={() => handleOptionChange(index)}
               />
-              <label className="quiz-option-text">{option}</label>
+              <span className="quiz-option-text">{option}</span>
             </label>
           </li>
         ))}
       </ul>
-      <button className="quiz-submit" onClick={handleSubmit}>Submit Answer</button>
+      <div className="quiz-navigation">
+        {currentQuestionIndex > 0 && (
+          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
+            Previous
+          </button>
+        )}
+        {!isLastQuestion && (
+          <button className="quiz-navigation-button" onClick={handleNextQuestion}>
+            Next
+          </button>
+        )}
+        {isLastQuestion && (
+          <button className="quiz-submit" onClick={handleSubmit}>
+            Submit Quiz
+          </button>
+        )}
+      </div>
     </div>
   );
 };
