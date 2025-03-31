@@ -108,7 +108,6 @@ function App() {
       }
     }
     
-    // fetchStudent(selections.email); // TODO:: Sreya to fetch this response and execute below steps if we don't find the student in our backend data
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
     setStepInput('');
@@ -128,13 +127,12 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
       case 5:
-        { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
-        const currentDate = new Date().toISOString().split('T')[0]; // Get current date
-        const studentData = {
-          email: selections.email,
-          age: selections.age,
-          grade: selections.grade,
-          lastLogin: currentDate,
+        { 
+          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
+          const studentData = {
+            email: selections.email,
+            age: selections.age,
+            grade: selections.grade,
         };
         saveStudent(studentData);
         setStudent(studentData);
@@ -148,15 +146,18 @@ function App() {
             console.error('Quiz object does not contain questions');
           }
         });
-        break; }
+        break; 
+      }
       case 6:
-        { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Working to evaluate submitted quiz...' }]);
-        evaluateQuiz(selections.grade, selections.subject, selections.age, selections.level, quiz).then(res => {
+        { 
+          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Working to evaluate submitted quiz...' }]);
+          evaluateQuiz(selections.grade, selections.subject, selections.age, selections.level, quiz).then(res => {
           let quizObj = res.data;
           setStudent({email: student.email, age: student.age, grade: student.grade, 
             lastLogin: student.lastLogin, strengths: quizObj.quiz.topic_strengths.toString(), weaknesses: quizObj.quiz.topic_weaknesses.toString()})
         });
-        break; }
+        break; 
+      }
         // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience 
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
@@ -267,11 +268,11 @@ function App() {
   };
 
   return (
-    <div>
-    <div className="header">
+  <div>
+  <div className="header">
     Smart Tutors Collective
   </div>
-    <div className="app-container">
+  <div className="app-container">
   <div className="chat-container">
     <Chat messages={messages} />
     {renderStep()}
@@ -296,7 +297,7 @@ function App() {
         <h2>Student Details</h2>
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
-        <p><strong>Last Activity:</strong> {student.lastLogin}</p>
+        <p><strong>Last Interacted On:</strong> {student.lastLogin? new Date(student.lastLogin).toLocaleString():''}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
       </div>
