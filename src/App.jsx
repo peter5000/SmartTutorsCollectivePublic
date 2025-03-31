@@ -183,7 +183,9 @@ function App() {
         saveStudent(studentData);
         setStudent(studentData);
       
-        passSelectionsToFunction(); // call the agent with student info - age, grade, subject and level
+        passSelectionsToFunction(11, "English", 17, "Intermediate").then(res => {
+          console.log(res.data);
+        }); // call the agent with student info - age, grade, subject and level
         // Use await to handle the asynchronous function
       
         const quizObj = generateBlogPost().then(quizObj => {
@@ -220,8 +222,13 @@ function App() {
   };
 
   // TODO: Should be updated and call Agent to generate the quiz
-  const passSelectionsToFunction = () => {
-    console.log('Passing selections to another function:', selections.email);
+  const passSelectionsToFunction = (grade, subject, age, level) => {
+    return axios.post(`http://localhost:5000/generate-quiz`, {
+      grade: grade,
+      subject: subject,
+      age: age,
+      level: level
+    });
   };
 
   const renderStep = () => {
