@@ -1,4 +1,5 @@
 const { createQuizGenTeam, createQuizEvalTeam } = require('./agents');
+const { createBookSuggestionTeam, createTopicSuggestionTeam } = require('./suggestion_agents');
 const readline = require('readline');
 const express = require('express');
 const fs = require('fs');
@@ -20,7 +21,7 @@ if (!fs.existsSync(folderPath)) {
 
 // API to save student data
 app.post('/save-student', (req, res) => {
-    
+
     const { email, age, grade } = req.body;
 
     if (!email || !age || !grade) {
@@ -131,7 +132,44 @@ app.post('/evaluate-quiz', async (req, res) => {
         }
       } catch (error) {
         console.error('Error generating blog post:', error);
+        res.status(400).json({ message: error });
       }
+});
+
+app.post('/topic-suggestions', async (req, res) => {
+    const {subject, age, grade, level, strength, weakness} = req.body;
+    if (!grade || !subject || !age || !level) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
+    try {
+    const output = await createTopicSuggestionTeam(subject, age, grade, level, strength, weakness).start()
+    if (output.status === 'FINISHED') {
+        res.type('json');
+        res.send(output.result);
+    } else if (output.status === 'BLOCKED') {
+        console.log('Workflow is blocked, unable to complete');
+    }
+    } catch (error) {
+    console.error('Error generating blog post:', error);
+    }
+});
+
+app.post('/book-suggestions', async (req, res) => {
+    const {subject, age, grade, level, strength, weakness} = req.body;
+    if (!grade || !subject || !age || !level) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
+    try {
+    const output = await createBookSuggestionTeam(subject, age, grade, level, strength, weakness).start()
+    if (output.status === 'FINISHED') {
+        res.type('json');
+        res.send(output.result);
+    } else if (output.status === 'BLOCKED') {
+        res.status(400).json({ message: 'Workflow is blocked, unable to complete' });
+    }
+    } catch (error) {
+        res.status(400).json({ message: error });
+    }
 });
 
 // Start the server
