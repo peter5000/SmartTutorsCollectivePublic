@@ -114,7 +114,7 @@ app.post('/generate-quiz', async (req, res) => {
 app.post('/evaluate-quiz', async (req, res) => {
     const {grade, subject, age, level, quiz} = req.body;
     try {
-        console.log(grade, subject, age, level, quiz);
+        // console.log(grade, subject, age, level, quiz);
         const output = await createQuizEvalTeam(subject, age, grade, level, quiz).start()
         if (output.status === 'FINISHED') {
           console.log('\nGenerated Blog Post:');

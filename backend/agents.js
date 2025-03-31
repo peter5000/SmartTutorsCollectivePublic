@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { z } = require('zod');
 const { Agent, Task, Team } = require('kaibanjs');
 const { TavilySearchResults } = require('@langchain/community/tools/tavily_search');
 
@@ -36,16 +37,28 @@ function createQuizGenTeam(subject, age, grade, level) {
     description: `Create a 10 question multiple choice quiz about ${subject}. The quiz should be oriented towards an audience of age ${age}, grade ${grade}, and self evaluated level of ${level}. The quiz should wield a diverse set of topics to evaluate a quiz taker's strengths and weaknesses.`,
     expectedOutput: `Create a question multiple choice quiz, with correct answers in json format. The json format should be:
     {\"quiz\":
-      \"questions\": [
+      {\"questions\": [
         {
           \"question\": \"QUESTION 1 HERE\",
           \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...],
           \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3,
           \"topic\": TOPIC
         }
-      ]
+      ]}
     }`,
-    agent: agentMap.get(subject)
+    agent: agentMap.get(subject),
+    outputSchema: z.object({
+        quiz: z.object({
+            questions: z.array(z.object({
+                question: z.string(),
+                options: z.array(
+                    z.string()
+                ),
+                correctAnswer: z.number(),
+                topic: z.string()
+            }))
+        })
+      })
   });
   return new Team({
     name: 'Quiz Creation Team',
@@ -59,6 +72,7 @@ function createQuizGenTeam(subject, age, grade, level) {
 
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
 function createQuizEvalTeam(subject, age, grade, level, quiz) { 
+quiz = JSON.stringify(quiz);
 subject = subject.toLowerCase(); 
   const writingTask = new Task({
     title: 'Quiz Feedback',
@@ -84,14 +98,30 @@ subject = subject.toLowerCase();
           \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...],
           \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3,
           \"chosenAnswer\": SOME INTEGER FROM 0-3,
-          \"explanation\": \"Explanation for why chosen answer was wrong, field exists only IF answer was wrong\",
+          \"explanation\": \"Explanation for why chosen answer was wrong or right",
           \"topic\": TOPIC
         }
       ],
       \"strengths\": [list of strengths (topics)],
       \"weaknesses\" [list of weaknesses (topics)]
     }`,
-    agent: agentMap.get(subject)
+    agent: agentMap.get(subject),
+    outputSchema: z.object({
+        quiz: z.object({
+            questions: z.array(z.object({
+                question: z.string(),
+                options: z.array(
+                    z.string()
+                ),
+                correctAnswer: z.number(),
+                chosenAnswer: z.number(),
+                explanation: z.string(),
+                topic: z.string(),
+            })),
+        strengths: z.array(z.string()),
+        weaknesses: z.array(z.string())
+        })
+      })
   });
   return new Team({
     name: 'Quiz Evaluation Team',
