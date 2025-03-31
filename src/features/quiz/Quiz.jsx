@@ -21,7 +21,7 @@ const Quiz = ({ quiz, onSaveAnswer }) => {
 
   return (
     <div className="quiz-container">
-      <h2 className="quiz-title">Quiz</h2>
+      <div className="quiz-title">Quiz</div>
       <p className="quiz-question">{questionObj.question}</p>
       <ul className="quiz-options">
         {questionObj.options.map((option, index) => (

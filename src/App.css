@@ -220,73 +220,113 @@ button:hover {
 }
 
 .quiz-container {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white for a subtle overlay */
+  backdrop-filter: blur(10px); /* Add a blur effect for a modern look */
+  border-radius: 12px;
+  padding: 30px; /* Increased padding for better spacing */
   max-width: 600px;
-  margin: 20px auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px auto; /* Increased margin for better spacing */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: #e0e0e0; /* Consistent text color with the rest of the site */
 }
 
 .quiz-title {
   font-size: 24px;
   margin-bottom: 10px;
   text-align: center;
-  color: #333;
+  color: #a5f3fc; 
+  font-weight: 600; 
 }
 
 .quiz-question {
   display: flex;
-  align-items: center;
-  width: 60%;
+  align-items: flex-start; /* Align question text to the top */
+  width: 100%; /* Full width for better responsiveness */
   font-size: 18px;
-  margin-bottom: 20px;
-  color: #555;
-  padding-left: 120px;
+  margin-bottom: 25px;
+  color: #e0e0e0;
+  padding-left: 0; /* Remove padding left */
+  flex-direction: column; /* Stack question and options vertically */
 }
 
 .quiz-options {
   list-style-type: none;
   padding: 0;
+  margin-top: 15px; /* Add space between question and options */
 }
 
 .quiz-option {
   display: flex;
-   /* Ensures items are aligned properly */
-  justify-content: flex-start; /* Aligns items to the left */
+  align-items: center;
+  margin-bottom: 10px; /* Space between options */
 }
 
 .quiz-option label {
   display: flex;
-  align-items: center; /* Aligns text with radio button */
+  align-items: center;
   font-size: 16px;
-  color: #333;
+  color: #e0e0e0;
   width: 100%;
 }
 
 .quiz-option input[type="radio"] {
-  margin-right: 10px;
+  margin-right: 15px; /* More space between radio button and text */
 }
 
 .quiz-option-text {
-  margin-left: 0; /* Ensure the text starts right after the radio button */
+  margin-left: 0;
 }
 
 .quiz-submit {
   display: block;
   width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
+  padding: 12px 24px; /* Consistent button padding */
+  background-color: #6ee7b7; /* Light green, matches other buttons */
+  color: #111827; /* Dark text for contrast */
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 18px;
   cursor: pointer;
-  margin-top: 20px;
-  text-align: center; /* Center the text inside the button */
+  margin-top: 30px; /* Increased margin for spacing */
+  text-align: center;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
 .quiz-submit:hover {
-  background-color: #0056b3;
-}align-items: center;
+  background-color: #34d399; /* Darker green on hover */
+}
+
+/* Optional: Add some spacing around the radio buttons */
+input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6ee7b7; /* Light green border */
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+input[type="radio"]:checked {
+  background-color: #6ee7b7; /* Light green fill when checked */
+  border-color: #34d399; /* Darker green border when checked */
+}
+
+input[type="radio"]::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+input[type="radio"]:checked::before {
+  opacity: 1;
+}
