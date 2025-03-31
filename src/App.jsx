@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
 import DevUtils from './DevUtils';
-import { blogTeam } from './blogTeam';
 import { imageTeam } from './generateFigure';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
@@ -18,32 +17,18 @@ function App() {
 
 // AGENT CODE --------------------------------------------------------------------------------------------
  // Setting up State
-  const [topic, setTopic] = useState('');
-  const [blogPost, setBlogPost] = useState('');
-  const [stats, setStats] = useState(null);
-  const [question, setQuestion] = useState('');
   const [quiz, setQuiz] = useState(null);
+  const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  // Connecting to the KaibanJS Store
-  const useTeamStore = blogTeam.useStore();
-
-  const {
-    agents,
-    tasks,
-    teamWorkflowStatus
-  } = useTeamStore(state => ({
-    agents: state.agents,
-    tasks: state.tasks,
-    teamWorkflowStatus: state.teamWorkflowStatus
-  }));
-
- 
   const [student, setStudent] = useState({
     age: '',
     grade: '',
     lastLogin: '',
+    strengths: '',
+    weaknesses: ''
   });
+
   const [error, setError] = useState('');
  // FRONTEND CODE --------------------------------------------------------------------------------------------
  const [searchInput, setSearchInput] = useState('');
@@ -52,36 +37,7 @@ function App() {
  const [selections, setSelections] = useState({});
  const [stepInput, setStepInput] = useState('');
  const [showChat, setShowChat] = useState(false);
-
-
-  const generateBlogPost = async () => {
-    setBlogPost('');
-    setStats(null);
-
-    try {
-    
-      const output = await blogTeam.start("8th grade geometry math");
-      if (output.status === 'FINISHED') {
-        setBlogPost(output.result);
-        console.log(output.result);
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: output.result }]);
-        const { costDetails, llmUsageStats, duration } = output.stats;
-        setStats({
-          duration: duration,
-          totalTokenCount: llmUsageStats.inputTokens + llmUsageStats.outputTokens,
-          totalCost: costDetails.totalCost
-        });
-        const quizOjb = JSON.parse(output.result);
-        setQuestion(JSON.parse(output.result)["quiz"]["questions"][0][question]);
-        document.getElementById('question').hidden = false;
-        return quizOjb;
-      } else if (output.status === 'BLOCKED') {
-        console.log(`Workflow is blocked, unable to complete`);
-      }
-    } catch (error) {
-      console.error('Error generating blog post:', error);
-    }
-  };
+ 
 
   const generateImage = async () => {
     try {
@@ -152,7 +108,7 @@ function App() {
       }
     }
     
-    fetchStudent(selections.email); // TODO:: Sreya to fetch this response and execute below steps if we don't find the student in our backend data
+    // fetchStudent(selections.email); // TODO:: Sreya to fetch this response and execute below steps if we don't find the student in our backend data
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
     setStepInput('');
@@ -174,28 +130,33 @@ function App() {
       case 5:
         { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded.' }]);
         const currentDate = new Date().toISOString().split('T')[0]; // Get current date
-      const studentData = {
-        email: selections.email,
-        age: selections.age,
-        grade: selections.grade,
-        lastLogin: currentDate,
-      };
+        const studentData = {
+          email: selections.email,
+          age: selections.age,
+          grade: selections.grade,
+          lastLogin: currentDate,
+        };
         saveStudent(studentData);
         setStudent(studentData);
       
-        passSelectionsToFunction(11, "English", 17, "Intermediate").then(res => {
-          console.log(res.data);
-        }); // call the agent with student info - age, grade, subject and level
-        // Use await to handle the asynchronous function
-      
-        const quizObj = generateBlogPost().then(quizObj => {
-        if (quizObj.quiz && quizObj.quiz.questions) {
-          setQuiz(quizObj.quiz);
-        } else {
-          console.error('Quiz object does not contain questions');
-        }
-    });
-
+        generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
+          let quizObj = res.data;
+          if (quizObj.quiz && quizObj.quiz.questions) {
+            setQuiz(quizObj.quiz);
+            document.getElementById('question').hidden = false;
+          } else {
+            console.error('Quiz object does not contain questions');
+          }
+        });
+        break; }
+      case 6:
+        { setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Working to evaluate submitted quiz...' }]);
+        evaluateQuiz(selections.grade, selections.subject, selections.age, selections.level, quiz).then(res => {
+          let quizObj = res.data;
+          setStudent({email: student.email, age: student.age, grade: student.grade, 
+            lastLogin: student.lastLogin, strengths: quizObj.quiz.topic_strengths.toString(), weaknesses: quizObj.quiz.topic_weaknesses.toString()})
+        });
+        break; }
         // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience 
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
@@ -208,7 +169,7 @@ function App() {
 
         //Function 3 - Post submission of quiz
         // Send back quiz response and ask for new categorized level and score and display remaining/new topics
-        break; }
+
       default:
         break;
     }
@@ -221,13 +182,28 @@ function App() {
     }
   };
 
-  // TODO: Should be updated and call Agent to generate the quiz
-  const passSelectionsToFunction = (grade, subject, age, level) => {
+  const tempQuizFunc = () => {
+    // example quiz with chosenAnswer field added to each question (note that this is 0 indexed)
+    setQuiz(JSON.parse('{"questions":[{"question":"What is 5 + 3?","options":["6","7","8","9"],"correctAnswer":2,"topic":"Addition","chosenAnswer":0},{"question":"What is 10 - 4?","options":["5","6","7","8"],"correctAnswer":0,"topic":"Subtraction","chosenAnswer":0},{"question":"What is 3 x 2?","options":["5","6","7","8"],"correctAnswer":1,"topic":"Multiplication","chosenAnswer":0},{"question":"What is 12 ÷ 4?","options":["2","3","4","5"],"correctAnswer":1,"topic":"Division","chosenAnswer":0},{"question":"If you have 3 apples and you get 2 more, how many apples do you have?","options":["4","5","6","7"],"correctAnswer":1,"topic":"Addition","chosenAnswer":0},{"question":"What is the shape of a stop sign?","options":["Circle","Square","Triangle","Octagon"],"correctAnswer":3,"topic":"Geometry","chosenAnswer":0},{"question":"What is the next number in the sequence: 1, 2, 3, ___?","options":["4","5","6","7"],"correctAnswer":0,"topic":"Number Sequences","chosenAnswer":0},{"question":"How many sides does a rectangle have?","options":["2","3","4","5"],"correctAnswer":2,"topic":"Geometry","chosenAnswer":0},{"question":"What is 9 + 1?","options":["8","9","10","11"],"correctAnswer":2,"topic":"Addition","chosenAnswer":0},{"question":"What is half of 8?","options":["3","4","5","6"],"correctAnswer":1,"topic":"Fractions","chosenAnswer":0}]}'));
+    handleSelect("quiz", "submitted");
+  }
+
+  const generateQuiz = (grade, subject, age, level) => {
     return axios.post(`http://localhost:5000/generate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
       level: level
+    });
+  };
+
+  const evaluateQuiz = (grade, subject, age, level, quiz) => {
+    return axios.post(`http://localhost:5000/evaluate-quiz`, {
+      grade: grade,
+      subject: subject,
+      age: age,
+      level: level,
+      quiz: quiz
     });
   };
 
@@ -280,9 +256,11 @@ function App() {
         return (
           <div id="question" hidden={true}>
              {quiz && <Quiz quiz={quiz} onSaveAnswer={handleSaveAnswer} />}
-            <button onClick={generateImage}>Generate Image</button>
+             <button onClick={tempQuizFunc}>Skip to next stage</button>
           </div>
         );
+      case 6:
+        return (<div>INSERT QUIZ HERE</div>);
       default:
         return null;
     }
@@ -319,6 +297,8 @@ function App() {
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
         <p><strong>Last Activity:</strong> {student.lastLogin}</p>
+        <p><strong>Strengths:</strong> {student.strengths}</p>
+        <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
       </div>
     )}
   </div>
@@ -327,83 +307,6 @@ function App() {
 </div>
     
   );
-
-  // return (
-  //   <div className="container">
-  //     <h1 className="header">AI Agents News Blogging Team</h1>
-  //     <div className="grid">
-  //       <div className="column">
-  //         <div className="options">
-  //           <input
-  //             type="text"
-  //             value={topic}
-  //             onChange={(e) => setTopic(e.target.value)}
-  //             placeholder="Enter a topic... E.g. math"
-  //           />
-  //           <button onClick={generateBlogPost}>
-  //             Generate
-  //           </button>
-  //         </div>
-  //         <div className="status">Status <span>{teamWorkflowStatus}</span></div>
-  //         {/* Generated Blog Post */}
-  //         <div className="blog-post">
-  //           {blogPost ? (
-  //             <ReactMarkdown>{blogPost}</ReactMarkdown>
-  //           ) : (
-  //             <p className="blog-post-info"><span>ℹ️</span><span>No blog post available yet</span><span>Enter a topic and click 'Generate' to see results here.</span></p>
-  //           )}
-  //         </div>
-  //       </div>
-
-  //       {/* We'll add more UI elements in the next steps */}
-  //       <div className="column">
-  //         {/* Agents Here */}
-  //         <h2 className="title">Agents</h2>
-  //         <ul className="agent-list">
-  //           {agents && agents.map((agent, index) => (
-  //             <li key={index}>
-  //               <img src={`https://ui-avatars.com/api/name=${encodeURIComponent(agent.name)}?background=3b82f6&color=fff`} alt={`${agent.name}'s avatar`} />
-  //               <span>{agent.name}</span>
-  //               <span>{agent.status}</span>
-  //             </li>
-  //           ))}
-  //         </ul>
-
-  //         {/* Tasks Here */}
-  //         <h2 className="title">Tasks</h2>
-  //         <ul className="task-list">
-  //           {tasks && tasks.map((task, index) => (
-  //             <li key={index}>
-  //               <span>{task.title}</span>
-  //               <span>{task.status}</span>
-  //             </li>
-  //           ))}
-  //         </ul>
-
-  //         {/* Stats Here */}
-  //         <h2 className="title">Stats</h2>
-  //         {stats ? (
-  //           <div className="stats">
-  //             <p>
-  //               <span>Total Tokens: </span>
-  //               <span>{stats.totalTokenCount}</span>
-  //             </p>
-  //             <p>
-  //               <span>Total Cost: </span>
-  //               <span>${stats.totalCost.toFixed(4)}</span>
-  //             </p>
-  //             <p>
-  //               <span>Duration: </span>
-  //               <span>{stats.duration} ms</span>
-  //             </p>
-  //           </div>
-  //         ) : (
-  //           <div className="stats"><p className="stats-info">ℹ️ No stats generated yet.</p></div>
-  //         )}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 }
 
 export default App;
