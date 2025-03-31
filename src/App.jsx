@@ -74,6 +74,8 @@ function App() {
         ...prevMessages,
         { sender: 'Agent', text: 'Welcome back! Please select the subject you are interested in.' },
       ]);
+
+      saveStudent(response.data); // calling save student to update last login in the backend data
       return true; // Student found
     } catch (err) {
       const studentData = { email, age: '', grade: '', lastLogin: '' };
