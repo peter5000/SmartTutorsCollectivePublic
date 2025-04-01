@@ -33,10 +33,6 @@ for(var i = 0; i < subjects.length; i++) {
       tools: [searchTool]
     })
   )
-}
-
-for(var i = 0; i < subjects.length; i++) {
-  let subject = subjects[i];
   topicsAgentMap.set(subject,
     new Agent({
       name: `${subject} Expert`,
@@ -60,8 +56,22 @@ function createBookSuggestionTeam(subject, age, grade, level, strength=undefined
   const writingTask = new Task({
     title: 'Book Suggestion',
     description: content,
-    expectedOutput: `Create a list of books related to ${subject}.`,
-    agent: booksAgentMap.get(subject)
+    expectedOutput: `Create a list of books related to ${subject}. in json format. The json format should be:
+    {\"books\": [
+      {
+        \"title\": \"BOOK TITLE HERE\",
+        \"author\": \"AUTHOR HERE\",
+        \"summary\": \"SUMMARY HERE\"
+      }
+    ]}`,
+    agent: booksAgentMap.get(subject),
+    outputSchema: z.object({
+      books: z.array(z.object({
+        title: z.string(),
+        author: z.string(),
+        summary: z.string()
+      }))
+    })
   });
   return new Team({
     name: 'Book Suggestion Team',
@@ -76,7 +86,7 @@ function createTopicSuggestionTeam(subject, age, grade, level, strength=null, we
   subject = subject.toLowerCase();
   let content = `Choose 5 topics related to ${subject} for a user of age ${age}, grade ${grade}, and self evaluated level of ${level}. `;
   if (strength && weakness) {
-    content += `The user has strengths in ${strength} and weaknesses in ${weakness}.`;
+    content += `The user has strengths in ${strength} and weaknesses in ${weakness}. `;
   }
   content += "The topics should be related to the subject and should be appropriate for the grade. The topics will be used as a reference for the user to study and learn more about the subject."
 
