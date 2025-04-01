@@ -175,6 +175,35 @@ function App() {
           }
           break;
         }
+      case 7:
+        {
+          if (key === 'topic') {
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'Agent', text: 'Generating the quiz...' }
+            ]);
+            setSelections((prev) => ({ ...prev, topic: value }));
+            generateQuiz(selections.grade, selections.subject, selections.age, selections.level, value).then(res => {
+              let quizObj = res.data;
+              if (quizObj.quiz && quizObj.quiz.questions) {
+                setQuiz(quizObj.quiz);
+                document.getElementById('question').hidden = false;
+              } else {
+                console.error('Quiz object does not contain questions');
+              }
+            });
+          } else if (key === 'book') {
+            // Evan's code to generate detailed book summary
+          } else {
+            // Handle invalid selection
+            // Theoretically, never should trigger
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'Agent', text: 'Invalid selection. Please select a valid topic or book.' }
+            ]);
+          }
+          break;
+        }
         // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
@@ -200,12 +229,13 @@ function App() {
     }
   };
 
-  const generateQuiz = (grade, subject, age, level) => {
+  const generateQuiz = (grade, subject, age, level, topic=null) => {
     return axios.post(`http://localhost:5000/generate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
-      level: level
+      level: level,
+      topic: topic
     });
   };
 
@@ -340,6 +370,8 @@ function App() {
                       { sender: 'Agent', text: `Do you want book suggestions or topic-based quiz?` }
                     ]);
                     document.querySelector(".suggestion-selection").hidden = false;
+                    setQuizCompleted(false);
+                    setEvaluatedQuiz(null);
                   }}
                 />
 
@@ -355,6 +387,56 @@ function App() {
             {books.length > 0 && (<BookSelector books={books} onSelect={handleSelect} />)}
           </div>
         );
+      case 7:
+      return (
+        <div>
+          <div id="question" hidden={true}>
+              {quiz && !quizCompleted && (
+              <Quiz
+                quiz={quiz}
+                subject={selections.subject}
+                age={selections.age}
+                grade={selections.grade}
+                level={selections.level}
+                topic={selections.topic}
+                onQuizComplete={(result) => {
+                // Extract strengths and weaknesses from the result
+                  setEvaluatedQuiz(result.quiz)
+                  // Calculate the score
+                  const questions = result.quiz.questions || [];
+                  const totalQuestions = questions.length;
+                  const correctAnswers = questions.filter((q) => q.chosenAnswer === q.correctAnswer).length;
+                  const score = `${correctAnswers} / ${totalQuestions}`; // Format as "correct / total"
+                  // Hide the quiz
+                  setQuizCompleted(true);
+                  document.getElementById('question').hidden = true;
+                  // Display a message or update the UI
+                  setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { sender: 'Agent', text: `Your quiz is complete!` },
+                    { sender: 'Agent', text: `Score: ${score}` }
+                  ]);
+                  document.getElementById('evalQuiz').hidden = false;
+                // Clear the topic selection
+                 setSelections((prev) => ({ ...prev, topic: null }));
+                 console.log("Selected topic: ", selections.topic)
+                }}
+              />
+            )}
+          </div>
+          <div id="evalQuiz">
+            {evaluatedQuiz && (
+              <EvalQuiz
+                quiz={evaluatedQuiz}
+                onDone={() => {
+                  document.getElementById('evalQuiz').hidden = true;
+                }}
+              />
+
+            )}
+          </div>
+        </div>
+      );
       default:
         return null;
     }

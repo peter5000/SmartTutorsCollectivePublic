@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level }) => {
+const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
 
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
@@ -49,6 +49,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level }) => {
         age,
         level,
         quiz: { questions: questionsWithAnswers },
+        topic
       });
       const evaluationResult = response.data;
       console.log('Evaluation Result:', evaluationResult);
