@@ -20,6 +20,7 @@ function App() {
   const [quiz, setQuiz] = useState(null);
   const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const [student, setStudent] = useState({
     age: '',
@@ -125,12 +126,16 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
         break;
       case 5:
-        { 
-          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Your selections have been recorded and generating the quiz.' }]);
-          const studentData = {
-            email: selections.email,
-            age: selections.age,
-            grade: selections.grade,
+          {
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'Agent', text: 'Thank you! Your selections have been recorded and generating the quiz.' },
+              { sender: 'Agent', text: 'Would you like to take the evaluation now?' }
+            ]);          const studentData = {
+              email: selections.email,
+              age: selections.age,
+              grade: selections.grade,
+              subject: selections.subject,
         };
         saveStudent(studentData);
         setStudent(studentData);
@@ -251,13 +256,48 @@ function App() {
         return <SubjectSelector onSelect={handleSelect} />;
       case 4:
         return <LevelSelector onSelect={handleSelect} />;
-      case 5:
-        return (
-          <div id="question" hidden={true}>
-             {quiz && <Quiz quiz={quiz} />}
-             <button onClick={tempQuizFunc}>Skip to next stage</button>
-          </div>
-        );
+        case 5:
+          return (
+            <div id="question" hidden={true}>
+               {quiz && !quizCompleted && (
+                <Quiz
+                  quiz={quiz}
+                  subject={selections.subject}
+                  age={selections.age}
+                  grade={selections.grade}
+                  level={selections.level}
+                  onQuizComplete={(result) => {
+                  // Extract strengths and weaknesses from the result
+                    const strengths = result.quiz.topic_strengths || [];
+                    const weaknesses = result.quiz.topic_weaknesses || [];
+                    // Calculate the score
+                    const questions = result.quiz.questions || [];
+                    const totalQuestions = questions.length;
+                    const correctAnswers = questions.filter((q) => q.chosenAnswer === q.correctAnswer).length;
+                    const score = `${correctAnswers} / ${totalQuestions}`; // Format as "correct / total"
+                    // Update the student details with the evaluation result
+                    setStudent((prevStudent) => ({
+                      ...prevStudent,
+                      strengths: strengths.join(', '), // Convert array to a comma-separated string
+                      weaknesses: weaknesses.join(', '), // Convert array to a comma-separated string
+                    }));
+                    // Hide the quiz
+                    setQuizCompleted(true);
+                    document.getElementById('question').hidden = true;
+                    // Display a message or update the UI
+                    setMessages((prevMessages) => [
+                      ...prevMessages,
+                      { sender: 'Agent', text: `Your quiz is complete!` },
+                      { sender: 'Agent', text: `Score: ${score}` },
+                      { sender: 'Agent', text: `Strengths: ${strengths.join(', ')}` },
+                      { sender: 'Agent', text: `Weaknesses: ${weaknesses.join(', ')}` },
+                    ]);
+                  }}
+                />
+              )}
+               <button onClick={tempQuizFunc}>Skip to next stage</button>
+            </div>
+          );
       case 6:
         return (<div>INSERT QUIZ HERE</div>);
       default:
@@ -295,14 +335,18 @@ function App() {
         <h2>Student Details</h2>
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
-        <p><strong>Last Interacted On:</strong> {student.lastLogin? new Date(student.lastLogin).toLocaleString():''}</p>
+        <p>
+  <strong>Last Activity:</strong> 
+  {student.lastLogin 
+    ? new Date(student.lastLogin).toLocaleString() 
+    : `No previous login. Current date and time: ${new Date().toLocaleString()}`}
+</p>        <p><strong>Subject:</strong> {student.subject}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
       </div>
     )}
   </div>
 </div>
-
 </div>
     
   );

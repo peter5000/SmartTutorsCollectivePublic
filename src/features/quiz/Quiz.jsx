@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const Quiz = ({ quiz, onQuizComplete }) => {
+const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level }) => {
   
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
@@ -38,8 +39,24 @@ const Quiz = ({ quiz, onQuizComplete }) => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log(questionsWithAnswers); // TODO:: call evaluate quiz, show score and render strengths and weaknesses
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/evaluate-quiz', {
+        grade,
+        subject,
+        age,
+        level,
+        quiz: { questions: questionsWithAnswers },
+      });
+      const evaluationResult = response.data;
+      console.log('Evaluation Result:', evaluationResult);
+      // Pass the evaluation result to the parent component or handle it here
+      if (onQuizComplete) {
+        onQuizComplete(evaluationResult);
+      }
+    } catch (error) {
+      console.error('Error evaluating quiz:', error);
+    }
   };
 
   const currentQuestion = questionsWithAnswers[currentQuestionIndex];

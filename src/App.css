@@ -364,3 +364,29 @@ input[type="radio"]:checked::before {
 .quiz-navigation-button:not(:last-child) {
   margin-right: 10px;
 }
+
+.student-card {
+  position: fixed;
+  right: 0;
+  top: 60px;
+  width: 280px;
+  height: calc(100vh - 90px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+.student-details h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  border-bottom: 3px solid 6EE7B7_1;
+  padding-bottom: 6px;
+  color: A5F3FC_1;
+}
+.student-details p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 8px 0;
+  color: E0E0E0_1;
+}
