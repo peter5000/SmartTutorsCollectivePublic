@@ -1,4 +1,4 @@
-const { createQuizGenTeam, createQuizEvalTeam } = require('./agents');
+const { createQuizGenTeam, createQuizEvalTeam, createTopicQuizGenTeam, createTopicQuizEvalTeam } = require('./agents');
 const { createBookSuggestionTeam, createTopicSuggestionTeam } = require('./suggestion_agents');
 const readline = require('readline');
 const express = require('express');
@@ -96,12 +96,17 @@ app.get('/get-student', (req, res) => {
 
 
 app.post('/generate-quiz', async (req, res) => {
-    const {grade, subject, age, level} = req.body;
+    const {grade, subject, age, level, topic} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
     }
     try {
-        const output = await createQuizGenTeam(subject, age, grade, level).start()
+        let output;
+        if (topic) {
+            output = await createTopicQuizGenTeam(subject, age, grade, level, topic).start()
+        } else {
+            output = await createQuizGenTeam(subject, age, grade, level).start()
+        }
         if (output.status === 'FINISHED') {
           console.log('\nGenerated Blog Post:');
           console.log(output.result);
@@ -116,12 +121,17 @@ app.post('/generate-quiz', async (req, res) => {
 });
 
 app.post('/evaluate-quiz', async (req, res) => {
-    const {grade, subject, age, level, quiz} = req.body;
+    const {grade, subject, age, level, quiz, topic} = req.body;
     if (!grade || !subject || !age || !level || !quiz) {
         return res.status(400).json({ message: 'Missing key data' });
     }
     try {
-        const output = await createQuizEvalTeam(subject, age, grade, level, quiz).start()
+        let output;
+        if (topic) {
+            output = await createTopicQuizEvalTeam(subject, age, grade, level, quiz, topic).start()
+        } else {
+            output = await createQuizEvalTeam(subject, age, grade, level, quiz).start()
+        }
         if (output.status === 'FINISHED') {
           console.log('\nGenerated Blog Post:');
           console.log(output.result);
@@ -147,10 +157,10 @@ app.post('/topic-suggestions', async (req, res) => {
         res.type('json');
         res.send(output.result);
     } else if (output.status === 'BLOCKED') {
-        console.log('Workflow is blocked, unable to complete');
+        res.status(400).json({ message: 'Workflow is blocked, unable to complete' });
     }
     } catch (error) {
-    console.error('Error generating blog post:', error);
+        res.status(400).json({ message: error });
     }
 });
 
