@@ -365,6 +365,15 @@ input[type="radio"]:checked::before {
   margin-right: 10px;
 }
 
+.quiz-incorrect {
+  text-decoration: line-through;
+  color: red;
+}
+
+.quiz-correct {
+  border: #34d399 3px solid;
+}
+
 .student-card {
   position: fixed;
   right: 0;

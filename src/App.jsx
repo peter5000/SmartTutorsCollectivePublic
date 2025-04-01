@@ -11,6 +11,7 @@ import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import Chat from './features/chat/Chat';
 import Quiz from './features/quiz/Quiz';
+import EvalQuiz from './features/quiz/EvalQuiz';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
 // AGENT CODE --------------------------------------------------------------------------------------------
  // Setting up State
   const [quiz, setQuiz] = useState(null);
+  const [evaluatedQuiz, setEvaluatedQuiz] = useState(null);
   const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
@@ -151,16 +153,6 @@ function App() {
         });
         break; 
       }
-      case 6:
-        { 
-          setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Working to evaluate submitted quiz...' }]);
-          evaluateQuiz(selections.grade, selections.subject, selections.age, selections.level, quiz).then(res => {
-          let quizObj = res.data;
-          setStudent({email: student.email, age: student.age, grade: student.grade, 
-            lastLogin: student.lastLogin, strengths: quizObj.quiz.topic_strengths.toString(), weaknesses: quizObj.quiz.topic_weaknesses.toString()})
-        });
-        break; 
-      }
         // setQuiz(quizObj.quiz);
         // Function 1 -- first time experience 
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
@@ -185,12 +177,6 @@ function App() {
       handleSelect(key, e.target.value);
     }
   };
-
-  const tempQuizFunc = () => {
-    // example quiz with chosenAnswer field added to each question (note that this is 0 indexed)
-    setQuiz(JSON.parse('{"questions":[{"question":"What is 5 + 3?","options":["6","7","8","9"],"correctAnswer":2,"topic":"Addition","chosenAnswer":0},{"question":"What is 10 - 4?","options":["5","6","7","8"],"correctAnswer":0,"topic":"Subtraction","chosenAnswer":0},{"question":"What is 3 x 2?","options":["5","6","7","8"],"correctAnswer":1,"topic":"Multiplication","chosenAnswer":0},{"question":"What is 12 ÷ 4?","options":["2","3","4","5"],"correctAnswer":1,"topic":"Division","chosenAnswer":0},{"question":"If you have 3 apples and you get 2 more, how many apples do you have?","options":["4","5","6","7"],"correctAnswer":1,"topic":"Addition","chosenAnswer":0},{"question":"What is the shape of a stop sign?","options":["Circle","Square","Triangle","Octagon"],"correctAnswer":3,"topic":"Geometry","chosenAnswer":0},{"question":"What is the next number in the sequence: 1, 2, 3, ___?","options":["4","5","6","7"],"correctAnswer":0,"topic":"Number Sequences","chosenAnswer":0},{"question":"How many sides does a rectangle have?","options":["2","3","4","5"],"correctAnswer":2,"topic":"Geometry","chosenAnswer":0},{"question":"What is 9 + 1?","options":["8","9","10","11"],"correctAnswer":2,"topic":"Addition","chosenAnswer":0},{"question":"What is half of 8?","options":["3","4","5","6"],"correctAnswer":1,"topic":"Fractions","chosenAnswer":0}]}'));
-    handleSelect("quiz", "submitted");
-  }
 
   const generateQuiz = (grade, subject, age, level) => {
     return axios.post(`http://localhost:5000/generate-quiz`, {
@@ -256,10 +242,11 @@ function App() {
         return <SubjectSelector onSelect={handleSelect} />;
       case 4:
         return <LevelSelector onSelect={handleSelect} />;
-        case 5:
-          return (
+      case 5:
+        return (
+          <div>
             <div id="question" hidden={true}>
-               {quiz && !quizCompleted && (
+                {quiz && !quizCompleted && (
                 <Quiz
                   quiz={quiz}
                   subject={selections.subject}
@@ -268,6 +255,7 @@ function App() {
                   level={selections.level}
                   onQuizComplete={(result) => {
                   // Extract strengths and weaknesses from the result
+                    setEvaluatedQuiz(result.quiz)
                     const strengths = result.quiz.topic_strengths || [];
                     const weaknesses = result.quiz.topic_weaknesses || [];
                     // Calculate the score
@@ -292,14 +280,24 @@ function App() {
                       { sender: 'Agent', text: `Strengths: ${strengths.join(', ')}` },
                       { sender: 'Agent', text: `Weaknesses: ${weaknesses.join(', ')}` },
                     ]);
+                    document.getElementById('evalQuiz').hidden = false;
                   }}
                 />
               )}
-               <button onClick={tempQuizFunc}>Skip to next stage</button>
             </div>
-          );
-      case 6:
-        return (<div>INSERT QUIZ HERE</div>);
+            <div id="evalQuiz">
+              {evaluatedQuiz && (
+                <EvalQuiz 
+                  quiz={evaluatedQuiz}
+                  onDone={() => {
+                    document.getElementById('evalQuiz').hidden = true;
+                  }}
+                />
+
+              )}
+            </div>
+          </div>
+        );
       default:
         return null;
     }
