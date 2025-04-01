@@ -378,11 +378,11 @@ input[type="radio"]:checked::before {
   position: fixed;
   right: 0;
   top: 60px;
-  width: 280px;
+  width: 25%;
   height: calc(100vh - 90px);
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 10;
 }
