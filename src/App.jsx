@@ -9,6 +9,9 @@ import AgeSelector from './features/selection/AgeSelector';
 import GradeSelector from './features/selection/GradeSelector';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
+import SuggestionSelector from './features/selection/SuggestionSelector';
+import TopicSelector from './features/selection/TopicSelector';
+import BookSelector from './features/selection/BookSelector';
 import Chat from './features/chat/Chat';
 import Quiz from './features/quiz/Quiz';
 import EvalQuiz from './features/quiz/EvalQuiz';
@@ -40,7 +43,9 @@ function App() {
  const [selections, setSelections] = useState({});
  const [stepInput, setStepInput] = useState('');
  const [showChat, setShowChat] = useState(false);
- 
+  const [topics, setTopics] = useState([]);
+  const [books, setBooks] = useState([]);
+
 
   const generateImage = async () => {
     try {
@@ -99,7 +104,7 @@ function App() {
 
 
   const handleSelect = async (key, value) => {
-     
+
     setSelections((prev) => ({ ...prev, [key]: value }));
 
     if (key === 'email') {
@@ -108,7 +113,7 @@ function App() {
         return;
       }
     }
-    
+
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
     setStepInput('');
@@ -141,7 +146,7 @@ function App() {
         };
         saveStudent(studentData);
         setStudent(studentData);
-      
+
         generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
           let quizObj = res.data;
           if (quizObj.quiz && quizObj.quiz.questions) {
@@ -151,13 +156,30 @@ function App() {
             console.error('Quiz object does not contain questions');
           }
         });
-        break; 
+        break;
       }
+      case 6:
+        {
+          if (value == 'Topics') {
+            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating topics'}]);
+            suggestTopics(selections.grade, "math", selections.age, selections.level, student.strengths, student.weaknesses)
+              .then(res => res.data)
+              .then(res => setTopics(res.topics));
+          } else if (value == 'Books') {
+            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating books'}]);
+            suggestBooks(selections.grade, "math", selections.age, selections.level, student.strengths, student.weaknesses)
+              .then(res => res.data)
+              .then(res => setBooks(res.books));
+          } else {
+            console.error('Invalid suggestion type selected');
+          }
+          break;
+        }
         // setQuiz(quizObj.quiz);
-        // Function 1 -- first time experience 
+        // Function 1 -- first time experience
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
         // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
-        // + Display how the student wants to learn(WIP:pictures, text, audio) 
+        // + Display how the student wants to learn(WIP:pictures, text, audio)
 
         // Function 2 - returned user -- repeated every time
         // Call the agent with student details, categarized level and preferred learning method
@@ -169,7 +191,7 @@ function App() {
       default:
         break;
     }
-  
+
   };
 
   const handleKeyPress = (e, key) => {
@@ -196,6 +218,28 @@ function App() {
       quiz: quiz
     });
   };
+
+    const suggestTopics = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
+      return axios.post(`http://localhost:5000/topic-suggestions`, {
+        grade: grade,
+        subject: subject,
+        age: age,
+        level: level,
+        strength: strength,
+        weakness: weakness
+      });
+    };
+
+    const suggestBooks = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
+      return axios.post(`http://localhost:5000/book-suggestions`, {
+        grade: grade,
+        subject: subject,
+        age: age,
+        level: level,
+        strength: strength,
+        weakness: weakness
+      });
+    };
 
   const renderStep = () => {
     switch (step) {
@@ -287,15 +331,28 @@ function App() {
             </div>
             <div id="evalQuiz">
               {evaluatedQuiz && (
-                <EvalQuiz 
+                <EvalQuiz
                   quiz={evaluatedQuiz}
                   onDone={() => {
                     document.getElementById('evalQuiz').hidden = true;
+                    setMessages((prevMessages) => [
+                      ...prevMessages,
+                      { sender: 'Agent', text: `Do you want book suggestions or topic-based quiz?` }
+                    ]);
+                    document.querySelector(".suggestion-selection").hidden = false;
                   }}
                 />
 
               )}
             </div>
+            <SuggestionSelector onSelect={handleSelect} />
+          </div>
+        );
+      case 6:
+      return (
+          <div>
+            {topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}
+            {books.length > 0 && (<BookSelector books={books} onSelect={handleSelect} />)}
           </div>
         );
       default:
@@ -334,9 +391,9 @@ function App() {
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
         <p>
-  <strong>Last Activity:</strong> 
-  {student.lastLogin 
-    ? new Date(student.lastLogin).toLocaleString() 
+  <strong>Last Activity:</strong>
+  {student.lastLogin
+    ? new Date(student.lastLogin).toLocaleString()
     : `No previous login. Current date and time: ${new Date().toLocaleString()}`}
 </p>        <p><strong>Subject:</strong> {student.subject}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
@@ -346,7 +403,7 @@ function App() {
   </div>
 </div>
 </div>
-    
+
   );
 }
 

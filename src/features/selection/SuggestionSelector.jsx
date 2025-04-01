@@ -4,7 +4,7 @@ const SuggestionSelector = ({ onSelect }) => {
   const suggestions = ['Topics', 'Books'];
 
   return (
-    <div className="suggestion-selection">
+    <div className="suggestion-selection" hidden={true}>
     {suggestions.map((suggestion) => (
       <label key={suggestion}>
         <input

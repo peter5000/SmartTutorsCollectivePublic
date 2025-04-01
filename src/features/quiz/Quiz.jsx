@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level }) => {
-  
+
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
       ...question,
@@ -41,6 +41,8 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level }) => {
 
   const handleSubmit = async () => {
     try {
+      document.querySelector('.quiz-submit').textContent = 'Waiting for result...';
+      document.querySelector('.quiz-submit').disabled = true;
       const response = await axios.post('http://localhost:5000/evaluate-quiz', {
         grade,
         subject,

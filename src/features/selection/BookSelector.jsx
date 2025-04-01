@@ -11,12 +11,12 @@ const BookSelector = ({ onSelect, books }) => {
           value={book.title}
           onChange={(e) => onSelect("book", e.target.value)}
         />
-        {index}
+        {index+1}
       </label>
     ))}
     {books.map((book, index) => (
-      <div class="book-contatiner" key={book.title}>
-        <p> {`${index}. ` + book.title}</p>
+      <div className="book-contatiner" key={book.title}>
+        <p> {`${index+1}. ` + book.title}</p>
         <p> {"Author: " + book.author}</p>
         <p> {"Summary: " + book.summary}</p>
       </div>
