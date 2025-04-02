@@ -1,6 +1,6 @@
 # Smart Tutors Collective
 
-Smart Tutors Collective is a web application that leverages AI agents to provide interactive, personalized learning experiences. By interacting with web components, users can engage with AI-agents to explore subjects, take evaluative quizzes, recognize strengths and weaknesses, and receive tailored book and learning path recommendations.
+Smart Tutors Collective is a web app powered by AI agents, offering personalized and interactive learning experiences. Users can explore subjects, learning paths, and books, take quizzes to assess their strengths and weaknesses, and receive tailored recommendations for books and learning paths. It's a comprehensive solution for engaging and adaptive education.
 
 ## Installation
 
@@ -44,26 +44,29 @@ OPENAI_API_KEY=your-tavily-api-key
 
 ## Running the Application
 
-To start the application in development mode, on your terminal type:
+To start the application in development mode, on your terminal, type:
 
 ```bash
 cd ..
 npm run dev
 ```
 
-Then leave the first terminal open, and open up another terminal for backend server. Then type:
+Then, leave the first terminal open, and open up another terminal for the backend server. Then type:
+
 ```bash
 cd backend
 node server.js
 ```
 
-If the frontend is failing to run, on the first terminal check you current directory by:
+If the frontend is failing to run, on the first terminal, check your current directory by:
+
 ```bash
 pwd
 // Expected Output: <YourFilePath>/SmartTutorsCollective
 ```
 
-If the backend is failing to run, on the second terminal check you current directory by:
+If the backend is failing to run, on the second terminal, check your current directory by:
+
 ```bash
 pwd
 // Expected Output: <YourFilePath>/SmartTutorsCollective/backend
@@ -76,17 +79,19 @@ pwd
 
 ## Features
 
-This web app enables users to abstract out interaction with AI agents into web components. The AI agents analyze user input and generate various interactive features, including:
+Smart Tutors Collective simplifies interactions with AI agents by integrating them into intuitive web components. The AI agents analyze user input to deliver a range of personalized and interactive features, including:
 
-- **Subject Research** – AI-assisted exploration of topics with curated insights.
-- **Quiz Generation** – Dynamic quizzes tailored to the user's grade, age, and claimed proficiency level on the chosen subject.
-- **Strength & Weakness Evaluation** – Personalized analysis of user knowledge to highlight areas for improvement.
-- **Book & Learning Path Suggestions** – AI-recommended resources and study plans to enhance learning.
-- **Focused Practices** - Learning paths comes with sub-topic suggestions that users can work on. Then quizzes will generated specialized on those topics
+- **Subject Exploration**: AI-guided research offering curated insights on chosen topics.
+- **Adaptive Quiz Creation**: Quizzes are dynamically tailored to the user's grade, age, and proficiency level.
+- **Knowledge Analysis**: Personalized evaluations highlighting strengths and areas for improvement.
+- **Resource Recommendations**: Tailored suggestions for books and learning paths to deepen learning.
+- **Focused Practice Paths**: Sub-topic suggestions with specialized quizzes to target specific learning areas.
+
+This streamlined approach empowers users to engage with AI-driven, adaptive learning in a meaningful and efficient manner.
 
 ## Building for Production
 
-To build the application for production:
+To build the production application:
 
 ```bash
 npm run build
