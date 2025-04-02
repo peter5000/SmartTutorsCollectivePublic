@@ -412,7 +412,7 @@ function App() {
                     document.getElementById('evalQuiz').hidden = true;
                     setMessages((prevMessages) => [
                       ...prevMessages,
-                      { sender: 'Agent', text: `Do you want book suggestions or topic-based quiz?` }
+                      { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject?` }
                     ]);
                     document.querySelector(".suggestion-selection").hidden = false;
                     setQuizCompleted(false);

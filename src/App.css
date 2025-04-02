@@ -414,3 +414,53 @@ input[type="radio"]:checked::before {
   margin: 8px 0;
   color: E0E0E0_1;
 }
+
+#book-query-input {
+  padding: 10px;
+  border: 1px solid #6ee7b7; /* Light green border */
+  border-radius: 8px;
+  font-size: 16px;
+  color: #e0e0e0; /* Light text color */
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Blur effect */
+  width: 100%; /* Take full width */
+  box-sizing: border-box; /* Include padding and border in width */
+}
+
+#book-query-input option {
+  background-color: #1f2937; /* Darker background for options */
+  color: #e0e0e0;
+}
+
+.book-selection-box {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+.book-selection-box button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.book-selection-box button:first-child { /* Submit Query Button */
+  background-color: #6ee7b7; /* Light green background */
+  color: #111827; /* Dark text */
+}
+
+.book-selection-box button:first-child:hover {
+  background-color: #34d399; /* Darker green on hover */
+}
+
+.book-selection-box button:last-child { /* Exit Chat Button */
+  background-color: #e11d48; /* Red background */
+  color: white;
+}
+
+.book-selection-box button:last-child:hover {
+  background-color: #be123c; /* Darker red on hover */
+}

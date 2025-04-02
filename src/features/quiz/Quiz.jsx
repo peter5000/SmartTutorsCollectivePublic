@@ -86,7 +86,12 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
         ))}
       </ul>
       <div className="quiz-navigation">
-        {!isLastQuestion && (
+         {currentQuestionIndex > 0 && (
+          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
+            Previous
+          </button>
+        )}
+         {!isLastQuestion && (
           <button className="quiz-navigation-button" onClick={handleNextQuestion}>
             Next
           </button>
@@ -96,11 +101,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
             Submit Quiz
           </button>
         )}
-        {currentQuestionIndex > 0 && (
-          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
-            Previous
-          </button>
-        )}
+        
       </div>
     </div>
   );

@@ -51,19 +51,19 @@ const EvalQuiz = ({ quiz, onDone }) => {
       </ul>
       <p className="quiz-explanation">{"Explanation: "  + currentQuestion.explanation}</p>
       <div className="quiz-navigation">
-        {!isLastQuestion && (
-          <button className="quiz-navigation-button" onClick={handleNextQuestion}>
-            Next
-          </button>
-        )}
         {
-          <button className="quiz-submit" onClick={handleDone}>
+          <button className="quiz-close-eval" onClick={handleDone}>
             Close Evaluated Quiz
           </button>
         }
         {currentQuestionIndex > 0 && (
           <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
             Previous
+          </button>
+        )}
+        {!isLastQuestion && (
+          <button className="quiz-navigation-button" onClick={handleNextQuestion}>
+            Next
           </button>
         )}
       </div>
