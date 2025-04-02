@@ -15,6 +15,7 @@ const subjects = ["english", "math", "science"]
 const booksAgentMap = new Map();
 const topicsAgentMap = new Map();
 const bookInquiryAgentMap = new Map();
+const learningPathAgentMap = new Map();
 
 // Input for agents
 // Either subject selection and level or subject selection and strength/weakness
@@ -38,7 +39,16 @@ for(var i = 0; i < subjects.length; i++) {
     new Agent({
       name: `${subject} Expert`,
       role: `${subject} Expert with Internet Access`,
-      goal: `Find key topics of ${subject}.`,
+      goal: `Find key topics of ${subject} based on given learning path.`,
+      background: `Experienced in information gathering, communication, summarization, and providing topics on the subject when needed.`,
+      tools: []
+    })
+  )
+  learningPathAgentMap.set(subject,
+    new Agent({
+      name: `${subject} Expert`,
+      role: `${subject} Expert with Internet Access`,
+      goal: `Create learning paths related to ${subject}.`,
       background: `Experienced in information gathering, communication, summarization, and providing topics on the subject when needed.`,
       tools: []
     })
@@ -92,13 +102,13 @@ function createBookSuggestionTeam(subject, age, grade, level, strength=undefined
 }
 
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
-function createTopicSuggestionTeam(subject, age, grade, level, strength=null, weakness=null) {
+function createTopicSuggestionTeam(subject, age, grade, level, learningPath=null, summary=null, strength=null, weakness=null) {
   subject = subject.toLowerCase();
   let content = `Choose 5 topics related to ${subject} for a user of age ${age}, grade ${grade}, and self evaluated level of ${level}. `;
   if (strength && weakness) {
     content += `The user has strengths in ${strength} and weaknesses in ${weakness}. `;
   }
-  content += "The topics should be related to the subject and should be appropriate for the grade. The topics will be used as a reference for the user to study and learn more about the subject."
+  content += `This is a learning path chosen by the user ${learningPath} and the summary is of learning path is here ${summary}. The topics should be related to the subject and should be appropriate for the grade. The topics should also be within the learning path and should agree with the summary. The topics will be used as a reference for the user to study and learn more about the subject. If the strengths and weaknesses are provided, the topics should be related to the strengths and weaknesses.`
 
   const writingTask = new Task({
     title: 'Topic Suggestion',
@@ -142,4 +152,40 @@ function createBookInquiryTeam(subject, age, grade, level, book, authors, questi
   });
 }
 
-module.exports = { createBookSuggestionTeam, createTopicSuggestionTeam, createBookInquiryTeam }
+
+// QUIZ GENERATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
+function createLearningPathSuggestionTeam(subject, age, grade, level, strength=undefined, weakness=undefined) {
+  subject = subject.toLowerCase();
+  let content = `Find and summarize 5 learning paths related to ${subject} for a user of age ${age}, grade ${grade}, and self evaluated level of ${level}.`;
+  if (strength && weakness) {
+    content += `The user has strengths in ${strength} and weaknesses in ${weakness}. `;
+  }
+  content += "For example, learning paths for high school math are like Standard High School Math Path, Advanced Math for STEM, Math for Data Science & Machine Learning, and Competition Math. The learning paths will be later used to generate topics and quizzes related to topics. Summary should include the general description of the learning paths"
+
+  const writingTask = new Task({
+    title: 'Book Suggestion',
+    description: content,
+    expectedOutput: `Create a list of learning paths related to ${subject}. in json format. The json format should be:
+    {\"learningPaths\": [
+      {
+        \"learningPath\": \"LEARNING PATH HERE\",
+        \"summary\": \"SUMMARY HERE\"
+      }
+    ]}`,
+    agent: learningPathAgentMap.get(subject),
+    outputSchema: z.object({
+      learningPaths: z.array(z.object({
+        learningPath: z.string(),
+        summary: z.string()
+      }))
+    })
+  });
+  return new Team({
+    name: 'Learning Path Suggestion Team',
+    agents: [learningPathAgentMap.get(subject)],
+    tasks: [writingTask],
+    env: { OPENAI_API_KEY: process.env.OPENAI_API_KEY }
+  });
+}
+
+module.exports = { createBookSuggestionTeam, createTopicSuggestionTeam, createBookInquiryTeam, createLearningPathSuggestionTeam }

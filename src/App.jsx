@@ -16,6 +16,7 @@ import BookSelector from './features/selection/BookSelector';
 import Chat from './features/chat/Chat';
 import Quiz from './features/quiz/Quiz';
 import EvalQuiz from './features/quiz/EvalQuiz';
+import LearningPathSelector from './features/selection/LearningPathSelector';
 // import ChatIconComponent from './features/chat/ChatIcon';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
  const [showChat, setShowChat] = useState(false);
   const [topics, setTopics] = useState([]);
   const [books, setBooks] = useState([]);
+  const [learningPaths, setLearningPaths] = useState([]);
   const [currentBook, setCurrentBook] = useState('');
   const [currentBookAuthors, setCurrentBookAuthors] = useState('');
 
@@ -157,14 +159,14 @@ function App() {
       }
       case 6:
         {
-          if (value == 'Topics') {
-            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating topics'}]);
-            suggestTopics(selections.grade, "math", selections.age, selections.level, student.strengths, student.weaknesses)
+          if (value == 'Learning Paths') {
+            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating learning paths'}]);
+            suggestLearningPaths(selections.grade, selections.subject, selections.age, selections.level, student.strengths, student.weaknesses)
               .then(res => res.data)
-              .then(res => setTopics(res.topics));
+              .then(res => setLearningPaths(res.learningPaths));
           } else if (value == 'Books') {
             setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating book recommendations'}]);
-            suggestBooks(selections.grade, "math", selections.age, selections.level, student.strengths, student.weaknesses)
+            suggestBooks(selections.grade, selections.subject, selections.age, selections.level, student.strengths, student.weaknesses)
               .then(res => res.data)
               .then(res => setBooks(res.books));
           } else {
@@ -174,21 +176,17 @@ function App() {
         }
       case 7:
         {
-          if (key === 'topic') {
+          if (key === 'learning path') {
+            value = JSON.parse(value);
+            let learningPath = value.learningPath;
+            let summary = value.summary;
             setMessages((prevMessages) => [
               ...prevMessages,
-              { sender: 'Agent', text: 'Generating the quiz...' }
+              { sender: 'Agent', text: `Generating the Topics related to the ${learningPath}...` }
             ]);
-            setSelections((prev) => ({ ...prev, topic: value }));
-            generateQuiz(selections.grade, selections.subject, selections.age, selections.level, value).then(res => {
-              let quizObj = res.data;
-              if (quizObj.quiz && quizObj.quiz.questions) {
-                setQuiz(quizObj.quiz);
-                document.getElementById('question').hidden = false;
-              } else {
-                console.error('Quiz object does not contain questions');
-              }
-            });
+            suggestTopics(selections.grade, selections.subject, selections.age, selections.level, learningPath, summary, student.strengths, student.weaknesses)
+            .then(res => res.data)
+            .then(res => setTopics(res.topics));
           } else if (key === 'book') {
             setMessages((prevMessages) => [
               ...prevMessages,
@@ -204,7 +202,21 @@ function App() {
           }
           break;
         }
-        // setQuiz(quizObj.quiz);
+      case 8:
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: 'Agent', text: 'Generating the quiz...' }
+        ]);
+        setSelections((prev) => ({ ...prev, topic: value }));
+        generateQuiz(selections.grade, selections.subject, selections.age, selections.level, value).then(res => {
+          let quizObj = res.data;
+          if (quizObj.quiz && quizObj.quiz.questions) {
+            setQuiz(quizObj.quiz);
+            document.getElementById('question').hidden = false;
+          } else {
+            console.error('Quiz object does not contain questions');
+          }
+        });
         // Function 1 -- first time experience
         // call the agent method with question, expected ans and received ans - receive categorized student level and score
         // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
@@ -249,8 +261,21 @@ function App() {
     });
   };
 
-    const suggestTopics = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
+    const suggestTopics = (grade, subject, age, level, learningPath, summary, strength=undefined, weakness=undefined) => {
       return axios.post(`http://localhost:5000/topic-suggestions`, {
+        grade: grade,
+        subject: subject,
+        age: age,
+        level: level,
+        learningPath: learningPath,
+        summary: summary,
+        strength: strength,
+        weakness: weakness
+      });
+    };
+
+    const suggestBooks = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
+      return axios.post(`http://localhost:5000/book-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -260,8 +285,8 @@ function App() {
       });
     };
 
-    const suggestBooks = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
-      return axios.post(`http://localhost:5000/book-suggestions`, {
+    const suggestLearningPaths = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
+      return axios.post(`http://localhost:5000/learning-path-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -395,16 +420,18 @@ function App() {
       case 6:
       return (
           <div>
-            {topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}
-            {books.length > 0 && (<BookSelector books={books} onSelect={(book, authors) => {
-              handleSelect("book", book);
+            {learningPaths.length > 0 && (<LearningPathSelector learningPaths={learningPaths} onSelect={handleSelect} />)}
+            {books.length > 0 && (<BookSelector books={books} onSelect={(key, book) => {
+              handleSelect(key, book);
               setCurrentBook(book);
               setCurrentBookAuthors(authors);
-              setStep(step + 2);
+              setStep(step + 3);
             }} />)}
           </div>
         );
       case 7:
+        return <div>{topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)};</div>
+      case 8:
       return (
         <div>
           <div id="question" hidden={true}>
@@ -454,7 +481,7 @@ function App() {
           </div>
         </div>
       );
-      case 8:
+      case 9:
         return (
           <BookQuery
             onQuery={(question) => {
@@ -517,7 +544,7 @@ function App() {
           {student.lastLogin
             ? new Date(student.lastLogin).toLocaleString()
             : ""}
-        </p>    
+        </p>
         <p><strong>Subject:</strong> {student.subject}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
