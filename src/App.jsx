@@ -168,7 +168,7 @@ function App() {
               .then(res => res.data)
               .then(res => setTopics(res.topics));
           } else if (value == 'Books') {
-            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating books'}]);
+            setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating book recommendations'}]);
             suggestBooks(selections.grade, "math", selections.age, selections.level, student.strengths, student.weaknesses)
               .then(res => res.data)
               .then(res => setBooks(res.books));
