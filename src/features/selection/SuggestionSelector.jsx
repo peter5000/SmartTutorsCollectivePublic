@@ -11,7 +11,7 @@ const SuggestionSelector = ({ onSelect }) => {
           type="radio"
           name="suggestion"
           value={suggestion}
-          onChange={(e) => onSelect("suggestion", e.target.value)}
+          onChange={(e) => onSelect("selected", e.target.value)}
         />
         {suggestion}
       </label>

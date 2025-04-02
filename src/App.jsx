@@ -473,11 +473,12 @@ function App() {
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
         <p>
-  <strong>Last Activity:</strong>
-  {student.lastLogin
-    ? new Date(student.lastLogin).toLocaleString()
-    : `No previous login. Current date and time: ${new Date().toLocaleString()}`}
-</p>        <p><strong>Subject:</strong> {student.subject}</p>
+          <strong>Last Activity: </strong>
+          {student.lastLogin
+            ? new Date(student.lastLogin).toLocaleString()
+            : ""}
+        </p>    
+        <p><strong>Subject:</strong> {student.subject}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
       </div>
