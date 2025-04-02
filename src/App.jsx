@@ -177,7 +177,14 @@ function App() {
             suggestBooks(selections.grade, selections.subject, selections.age, selections.level, student.strengths, student.weaknesses)
               .then(res => res.data)
               .then(res => setBooks(res.books));
-          } else {
+          } else if (value == 'Subject') {
+            setMessages((prevMessages) => [...prevMessages, {sender: 'Agent', text: 'Please select a new subject.'}])
+            setQuiz(null);
+            setEvaluatedQuiz(null);
+            setQuizCompleted(false);
+            setStep(3);
+          } 
+          else {
             console.error('Invalid suggestion type selected');
           }
           break;
