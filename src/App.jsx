@@ -24,11 +24,14 @@ function App() {
 // AGENT CODE --------------------------------------------------------------------------------------------
  // Setting up State
   const [quiz, setQuiz] = useState(null);
+  const [showEvaluationPrompt, setShowEvaluationPrompt] = useState(true);
+  const [isQuizActive, setIsQuizActive] = useState(false);
   const [evaluatedQuiz, setEvaluatedQuiz] = useState(null);
   const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizNumber, setQuizNumber] = useState(0); // important for resetting quiz component
+  
 
   const [student, setStudent] = useState({ });
 
@@ -141,8 +144,7 @@ function App() {
           {
             setMessages((prevMessages) => [
               ...prevMessages,
-              { sender: 'Agent', text: 'Thank you! Your selections have been recorded and generating the quiz.' },
-              { sender: 'Agent', text: 'Would you like to take the evaluation now?' }
+              { sender: 'Agent', text: 'Thank you! Your selections have been recorded' },
             ]);          const studentData = {
               email: selections.email,
               age: selections.age,
@@ -255,6 +257,16 @@ function App() {
       level: level,
       topic: topic
     });
+  };
+
+  const handleEvaluationPromptResponse = (response) => {
+    if (response === 'yes') {
+      setShowEvaluationPrompt(false);
+      generateQuiz(); // Generate quiz ONLY if the user selects Yes
+    } else {
+      setShowEvaluationPrompt(false);
+      setIsQuizActive(false); // Skip quiz generation
+    }
   };
 
   const evaluateQuiz = (grade, subject, age, level, quiz) => {
