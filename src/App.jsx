@@ -400,11 +400,15 @@ function App() {
                     const correctAnswers = questions.filter((q) => q.chosenAnswer === q.correctAnswer).length;
                     const score = `${correctAnswers} / ${totalQuestions}`; // Format as "correct / total"
                     // Update the student details with the evaluation result
-                    setStudent((prevStudent) => ({
-                      ...prevStudent,
-                      strengths: strengths.join(', '), // Convert array to a comma-separated string
-                      weaknesses: weaknesses.join(', '), // Convert array to a comma-separated string
-                    }));
+                    const updateStudent = {
+                      ...student,
+                      strengths: strengths.join(', '),
+                      weaknesses: weaknesses.join(', '),
+                      lastLogin: new Date().toISOString()
+                    };
+                    
+                    setStudent(updateStudent);
+                    saveStudent(updateStudent);
                     // Hide the quiz
                     setQuizCompleted(true);
                     document.getElementById('question').hidden = true;
