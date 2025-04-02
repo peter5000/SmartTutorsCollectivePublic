@@ -33,7 +33,7 @@ body::before {
   font-weight: 600; /* Slightly lighter bold */
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  width: 90%;
+  width: 100%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Softer shadow */
   position: sticky; /* Sticky header */
   top: 0;
@@ -390,9 +390,9 @@ input[type="radio"]:checked::before {
 
 .student-card {
   position: fixed;
-  right: 0;
+  right: 4%;
   top: 60px;
-  width: 25%;
+  width: 20%;
   height: calc(100vh - 90px);
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px;
