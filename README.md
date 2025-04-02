@@ -1,6 +1,6 @@
 # Smart Tutors Collective
 
-Smart Tutors Collective is a web app powered by AI agents, offering personalized and interactive learning experiences. Users can explore subjects, learning paths, and books, take quizzes to assess their strengths and weaknesses, and receive tailored recommendations for books and learning paths. It's a comprehensive solution for engaging and adaptive education.
+Smart Tutors Collective is a web app powered by AI agents, offering personalized and interactive learning experiences. Users can explore subjects and learning paths, take quizzes to assess their strengths and weaknesses, and receive tailored recommendations for books and learning paths. It's a comprehensive solution for engaging and adaptive education.
 
 ## Installation
 
