@@ -145,7 +145,9 @@ function App() {
             setMessages((prevMessages) => [
               ...prevMessages,
               { sender: 'Agent', text: 'Thank you! Your selections have been recorded' },
-            ]);          const studentData = {
+            ]);          
+            
+            const studentData = {
               email: selections.email,
               age: selections.age,
               grade: selections.grade,
@@ -233,18 +235,6 @@ function App() {
             console.error('Quiz object does not contain questions');
           }
         });
-        // Function 1 -- first time experience
-        // call the agent method with question, expected ans and received ans - receive categorized student level and score
-        // Display the categorized student level, strengts and weakness,  dispaly sorted topics and resources to learn (books names, online mater links etc)
-        // + Display how the student wants to learn(WIP:pictures, text, audio)
-
-        // Function 2 - returned user -- repeated every time
-        // Call the agent with student details, categarized level and preferred learning method
-        // Gives - Quiz on the specific topic, level and subject
-
-        //Function 3 - Post submission of quiz
-        // Send back quiz response and ask for new categorized level and score and display remaining/new topics
-
       default:
         break;
     }
@@ -443,7 +433,7 @@ function App() {
                     document.getElementById('evalQuiz').hidden = true;
                     setMessages((prevMessages) => [
                       ...prevMessages,
-                      { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject?` }
+                      { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject above or do you want to try new subject?` }
                     ]);
                     document.querySelector(".suggestion-selection").hidden = false;
                     setQuizCompleted(false);

@@ -66,7 +66,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQu
     return (
       <div className="quiz-container">
         <p>Would you like to take the evaluation now?</p>
-        <div className="quiz-options">
+        <div className="eval-confirmation">
           <button onClick={() => handleEvaluationPromptResponse('yes')}>Yes</button>
           <button onClick={() => handleEvaluationPromptResponse('no')}>No</button>
         </div>
