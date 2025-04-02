@@ -145,27 +145,31 @@ function App() {
             setMessages((prevMessages) => [
               ...prevMessages,
               { sender: 'Agent', text: 'Thank you! Your selections have been recorded' },
-            ]);          
-            
+            ]);
+
             const studentData = {
               email: selections.email,
               age: selections.age,
               grade: selections.grade,
+            };
+            saveStudent(studentData);
+            setStudent((prev) => ({...prev,
+              email: selections.email,
+              age: selections.age,
+              grade: selections.grade,
               subject: selections.subject,
-        };
-        saveStudent(studentData);
-        setStudent(studentData);
-        generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
-          let quizObj = res.data;
-          if (quizObj.quiz && quizObj.quiz.questions) {
-            setQuiz(quizObj.quiz);
-            document.getElementById('question').hidden = false;
-          } else {
-            console.error('Quiz object does not contain questions');
+            }));
+            generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
+              let quizObj = res.data;
+              if (quizObj.quiz && quizObj.quiz.questions) {
+                setQuiz(quizObj.quiz);
+                document.getElementById('question').hidden = false;
+              } else {
+                console.error('Quiz object does not contain questions');
+              }
+            });
+            break;
           }
-        });
-        break;
-      }
       case 6:
         {
           setFirstQuiz(false);
