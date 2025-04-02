@@ -146,6 +146,10 @@ function App() {
               ...prevMessages,
               { sender: 'Agent', text: 'Thank you! Your selections have been recorded' },
             ]);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'Agent', text: 'Preparing AI Agents based on your choices...' },
+            ]);
 
             const studentData = {
               email: selections.email,
@@ -209,7 +213,12 @@ function App() {
             ]);
             suggestTopics(selections.grade, selections.subject, selections.age, selections.level, learningPath, summary, student.strengths, student.weaknesses)
             .then(res => res.data)
-            .then(res => setTopics(res.topics));
+            .then(res => setTopics(res.topics))
+            .then(() => {
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: 'Agent', text: `Please select a topic you want to practice` }
+              ])});
           } else if (key === 'book') {
             setMessages((prevMessages) => [
               ...prevMessages,
@@ -390,6 +399,10 @@ function App() {
                     // Quiz skipped
                     if (!result) {
                       document.getElementById('question').hidden = true;
+                      setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject above or do you want to try new subject?` }
+                      ]);
                       document.querySelector(".suggestion-selection").hidden = false;
                       return;
                     }
