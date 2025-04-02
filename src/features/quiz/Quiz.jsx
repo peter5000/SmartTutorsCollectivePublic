@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
+const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQuiz }) => {
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz?.questions?.map((question) => ({
       ...question,
@@ -9,8 +9,8 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
     })) || []
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showEvaluationPrompt, setShowEvaluationPrompt] = useState(true); // State for the prompt
-  
+  const [showEvaluationPrompt, setShowEvaluationPrompt] = useState(firstQuiz); // State for the prompt
+
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     return <div className="quiz-container">No quiz available</div>;
   }
@@ -55,6 +55,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
     if (response === 'yes') {
       setShowEvaluationPrompt(false); // Hide the prompt and continue the quiz flow
     } else {
+      setShowEvaluationPrompt(false);
       onQuizComplete?.(null); // Optionally, trigger a callback to signal quiz is skipped
     }
   };
