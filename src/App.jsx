@@ -41,6 +41,7 @@ function App() {
   const [topics, setTopics] = useState([]);
   const [books, setBooks] = useState([]);
   const [currentBook, setCurrentBook] = useState('');
+  const [currentBookAuthors, setCurrentBookAuthors] = useState('');
 
 
   const generateImage = async () => {
@@ -270,13 +271,14 @@ function App() {
       });
     };
 
-    const bookQuery = (subject, age, grade, level, book, question) => {
+    const bookQuery = (subject, age, grade, level, book, authors, question) => {
       return axios.post(`http://localhost:5000/book-inquiry`, {
         subject: subject,
         age: age,
         grade: grade,
         level: level,
         book: book,
+        authors: authors,
         question: question
       });
     };
@@ -394,9 +396,10 @@ function App() {
       return (
           <div>
             {topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}
-            {books.length > 0 && (<BookSelector books={books} onSelect={(key, book) => {
-              handleSelect(key, book);
+            {books.length > 0 && (<BookSelector books={books} onSelect={(book, authors) => {
+              handleSelect("book", book);
               setCurrentBook(book);
+              setCurrentBookAuthors(authors);
               setStep(step + 2);
             }} />)}
           </div>
@@ -459,7 +462,7 @@ function App() {
                 ...prevMessages,
                 { sender: 'Student', text: `${question}` },
               ]);
-              bookQuery(selections.subject, selections.age, selections.age, selections.level, currentBook, question).then(res => {
+              bookQuery(selections.subject, selections.age, selections.age, selections.level, currentBook, currentBookAuthors, question).then(res => {
                 let response = res.data;
                 setMessages((prevMessages) => [
                   ...prevMessages,

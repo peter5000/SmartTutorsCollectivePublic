@@ -9,7 +9,7 @@ const BookSelector = ({ onSelect, books }) => {
           type="radio"
           name="book"
           value={book.title}
-          onChange={(e) => onSelect("book", e.target.value)}
+          onChange={(e) => onSelect(e.target.value, books[index].author)}
         />
         <div className="book-contatiner" key={book.title}>
         <p> {`${index+1}. ` + book.title}</p>

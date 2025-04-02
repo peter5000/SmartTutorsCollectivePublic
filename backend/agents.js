@@ -254,7 +254,7 @@ subject = subject.toLowerCase();
           \"question\": \"QUESTION 1 HERE\",
           \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...],
           \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3,
-          \"chosenAnswer\": SOME INTEGER FROM 0-3,
+          \"chosenAnswer\": SOME INTEGER FROM 0-3, WILL BE -1 IF USER DID NOT CHOOSE AN ANSWER,
           \"explanation\": \"Detailed explanation for why chosen answer was wrong or right"
         }
       ]

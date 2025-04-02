@@ -124,9 +124,9 @@ function createTopicSuggestionTeam(subject, age, grade, level, strength=null, we
   });
 }
 
-function createBookInquiryTeam(subject, age, grade, level, book, question) {
+function createBookInquiryTeam(subject, age, grade, level, book, authors, question) {
   subject = subject.toLowerCase();
-  let content = `Answer the following query about the book ${book}. For context, the user is of age ${age}, grade ${grade}, and self evaluated level of ${level}. This is their question: ${question}`;
+  let content = `Answer the following query about the book ${book} written by ${authors}. For context, the user is of age ${age}, grade ${grade}, and self evaluated level of ${level}. This is their question: ${question}`;
   const writingTask = new Task({
     title: 'Book Inquiry',
     description: content,

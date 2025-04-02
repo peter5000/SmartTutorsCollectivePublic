@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
+const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, quizID }) => {
 
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
@@ -87,11 +87,6 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
         ))}
       </ul>
       <div className="quiz-navigation">
-        {currentQuestionIndex > 0 && (
-          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
-            Previous
-          </button>
-        )}
         {!isLastQuestion && (
           <button className="quiz-navigation-button" onClick={handleNextQuestion}>
             Next
@@ -100,6 +95,11 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
         {isLastQuestion && (
           <button className="quiz-submit" onClick={handleSubmit}>
             Submit Quiz
+          </button>
+        )}
+        {currentQuestionIndex > 0 && (
+          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
+            Previous
           </button>
         )}
       </div>

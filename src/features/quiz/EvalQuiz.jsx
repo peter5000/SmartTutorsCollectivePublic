@@ -49,13 +49,8 @@ const EvalQuiz = ({ quiz, onDone }) => {
           </li>
         ))}
       </ul>
-      <p className="quiz-explanation">{currentQuestion.explanation}</p>
+      <p className="quiz-explanation">{"Explanation: "  + currentQuestion.explanation}</p>
       <div className="quiz-navigation">
-        {currentQuestionIndex > 0 && (
-          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
-            Previous
-          </button>
-        )}
         {!isLastQuestion && (
           <button className="quiz-navigation-button" onClick={handleNextQuestion}>
             Next
@@ -66,6 +61,11 @@ const EvalQuiz = ({ quiz, onDone }) => {
             Close Evaluated Quiz
           </button>
         }
+        {currentQuestionIndex > 0 && (
+          <button className="quiz-navigation-button" onClick={handlePreviousQuestion}>
+            Previous
+          </button>
+        )}
       </div>
     </div>
   );

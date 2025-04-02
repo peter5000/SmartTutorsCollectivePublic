@@ -201,12 +201,12 @@ app.post('/book-information', async (req, res) => {
 });
 
 app.post('/book-inquiry', async (req, res) => {
-    const {subject, age, grade, level, book, question} = req.body;
-    if (!subject || !age || !grade || !level || !book || !question) {
+    const {subject, age, grade, level, book, authors, question} = req.body;
+    if (!subject || !age || !grade || !level || !book || !authors || !question) {
         return res.status(400).json({ message: 'Missing key data' });
     }
     try {
-    const output = await createBookInquiryTeam(subject, age, grade, level, book, question).start()
+    const output = await createBookInquiryTeam(subject, age, grade, level, book, authors, question).start()
     if (output.status === 'FINISHED') {
         res.type('text');
         res.send(output.result);
