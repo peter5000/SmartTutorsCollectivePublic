@@ -32,6 +32,8 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQu
   };
 
   const handleSubmit = async () => {
+    document.querySelector('.quiz-submit').textContent = 'Waiting for result...';
+    document.querySelector('.quiz-submit').disabled = true;
     try {
       const response = await axios.post('http://localhost:5000/evaluate-quiz', {
         grade,
