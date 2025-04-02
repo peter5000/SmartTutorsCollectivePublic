@@ -14,6 +14,7 @@ const subjects = ["english", "math", "science"]
 
 // English, Math, Science agents
 const agentMap = new Map();
+const editingAgentMap = new Map();
 
 for(var i = 0; i < subjects.length; i++) {
   let subject = subjects[i];
@@ -24,6 +25,15 @@ for(var i = 0; i < subjects.length; i++) {
       goal: `Provide information of ${subject}, conducting research online to supplement missing knowledge.`,
       background: `Experienced in information gathering, communication, evaluating experience levels, and providing topics on the subject when needed.`,
       tools: [searchTool]
+    })
+  )
+  editingAgentMap.set(subject,
+    new Agent({
+      name: `${subject} Expert`,
+      role: `${subject} Expert with Internet Access`,
+      goal: `Read and edit multiple choice question set of ${subject}, conducting research online to pull up questions related given topic.`,
+      background: `Experienced in reading and understanding questions in json format. Understanding ${subject} enough to evaluate whether given questions are related to given topic. Mastered in looking up online to pull up questions only related to given topic.`,
+      tools: []
     })
   )
 }
@@ -166,10 +176,48 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
         })
       })
   });
+  const editingTask = new Task({
+    title: 'Quiz editing',
+    description: `Review each questions in multiple choice quiz and replace the questions not related with ${topic} to the questions related with ${topic}. Also, review the options and correct answers. The quiz should focus on ${topic} to enhance the quiz taker's knowledge in that area. The quiz will be given in json format.
+    The format is:
+    {\"quiz\":
+      \"questions\": [
+        {
+          \"question\": \"QUESTION 1 HERE\",
+          \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...],
+          \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3
+          }
+        }
+      ]
+    }
+    Here is the quiz: {taskResult:task1}`,
+    expectedOutput: `Create a question multiple choice quiz, with correct answers in json format. The json format should be:
+    {\"quiz\":
+      {\"questions\": [
+        {
+          \"question\": \"QUESTION 1 HERE\",
+          \"options\": [\"OPTION 1 FOR QUESTION 1 HERE\", \"OPTION 2 FOR QUESTION 1 HERE\"...],
+          \"correctAnswer\": SOME INTEGER REPRESENTING CORRECT ANSWER FROM 0-3
+        }
+      ]}
+    }`,
+    agent: editingAgentMap.get(subject),
+    outputSchema: z.object({
+        quiz: z.object({
+            questions: z.array(z.object({
+                question: z.string(),
+                options: z.array(
+                    z.string()
+                ),
+                correctAnswer: z.number()
+            }))
+        })
+      })
+  });
   return new Team({
     name: 'Quiz with Topic Creation Team',
-    agents: [agentMap.get(subject)],
-    tasks: [writingTask],
+    agents: [agentMap.get(subject), editingAgentMap.get(subject)],
+    tasks: [writingTask, editingTask],
     env: { OPENAI_API_KEY: process.env.OPENAI_API_KEY }
   });
 
@@ -177,7 +225,7 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
 }
 
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, SELF DECLARED LEVEL, and TOPIC
-function createTopicQuizEvalTeam(subject, age, grade, level, quiz) {
+function createTopicQuizEvalTeam(subject, age, grade, level, quiz, topic) {
 quiz = JSON.stringify(quiz);
 subject = subject.toLowerCase();
   const writingTask = new Task({
