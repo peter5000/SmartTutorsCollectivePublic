@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SuggestionSelector = ({ onSelect }) => {
-  const suggestions = ['Topics', 'Books'];
+  const suggestions = ['Learning Paths', 'Books'];
 
   return (
     <div className="suggestion-selection" hidden={true}>

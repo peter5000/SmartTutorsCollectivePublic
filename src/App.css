@@ -149,7 +149,7 @@ button:hover {
 }
 
 /* Subject Selection Container */
-.subject-selection, .topic-selection, .book-selection {
+.subject-selection, .topic-selection, .book-selection, .learning-path-selection {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -165,7 +165,7 @@ button:hover {
 }
 
 .suggestion-selection
-{ 
+{
   flex-wrap: wrap;
   gap: 15px;
   background: rgba(255, 255, 255, 0.1);
@@ -179,7 +179,7 @@ button:hover {
   margin-top: 20px;}
 
 /* Label Styling */
-.subject-selection label,.suggestion-selection label, .topic-selection label, .book-selection label {
+.subject-selection label,.suggestion-selection label, .topic-selection label, .book-selection label, .learning-path-selection label {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -188,12 +188,12 @@ button:hover {
   cursor: pointer;
   transition: color 0.3s ease-in-out;
 }
-.subject-selection label:hover, .suggestion-selection label:hover, .topic-selection label:hover, .book-selection label:hover {
+.subject-selection label:hover, .suggestion-selection label:hover, .topic-selection label:hover, .book-selection label:hover, .learning-path-selection label:hover {
   color: #6ee7b7;
 }
 
 /* Radio Button Custom Styling */
-.subject-selection input[type="radio"], .suggestion-selection input[type="radio"], .topic-selection input[type="radio"],  .book-selection input[type="radio"] {
+.subject-selection input[type="radio"], .suggestion-selection input[type="radio"], .topic-selection input[type="radio"],  .book-selection input[type="radio"], .learning-path-selection input[type="radio"] {
   appearance: none;
   width: 18px;
   height: 18px;
@@ -203,11 +203,11 @@ button:hover {
   cursor: pointer;
   transition: 0.3s;
 }
-.subject-selection input[type="radio"]:checked, .suggestion-selection input[type="radio"]:checked, .topic-selection input[type="radio"]:checked, .book-selection input[type="radio"]:checked {
+.subject-selection input[type="radio"]:checked, .suggestion-selection input[type="radio"]:checked, .topic-selection input[type="radio"]:checked, .book-selection input[type="radio"]:checked, .learning-path-selection input[type="radio"]:checked {
   background-color: #6ee7b7;
   border-color: #34d399;
 }
-.subject-selection input[type="radio"]::before, .suggestion-selection input[type="radio"]::before, .topic-selection input[type="radio"]::before, .book-selection input[type="radio"]::before {
+.subject-selection input[type="radio"]::before, .suggestion-selection input[type="radio"]::before, .topic-selection input[type="radio"]::before, .book-selection input[type="radio"]::before .learning-path-selection input[type="radio"]::before {
   content: "";
   position: absolute;
   width: 8px;
@@ -220,7 +220,7 @@ button:hover {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
 }
-.subject-selection input[type="radio"]:checked::before, .suggestion-selection input[type="radio"]:checked::before , .topic-selection input[type="radio"]:checked::before, .book-selection input[type="radio"]:checked::before {
+.subject-selection input[type="radio"]:checked::before, .suggestion-selection input[type="radio"]:checked::before , .topic-selection input[type="radio"]:checked::before, .book-selection input[type="radio"]:checked::before, .learning-path-selection input[type="radio"]:checked::before {
   opacity: 1;
 }
 
@@ -248,8 +248,8 @@ button:hover {
   font-size: 24px;
   margin-bottom: 10px;
   text-align: center;
-  color: #a5f3fc; 
-  font-weight: 600; 
+  color: #a5f3fc;
+  font-weight: 600;
 }
 
 .quiz-question {

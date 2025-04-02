@@ -147,12 +147,12 @@ app.post('/evaluate-quiz', async (req, res) => {
 });
 
 app.post('/topic-suggestions', async (req, res) => {
-    const {subject, age, grade, level, strength, weakness} = req.body;
+    const {subject, age, grade, level, learningPath, summary, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
     }
     try {
-    const output = await createTopicSuggestionTeam(subject, age, grade, level, strength, weakness).start()
+    const output = await createTopicSuggestionTeam(subject, age, grade, level, learningPath, summary, strength, weakness).start()
     if (output.status === 'FINISHED') {
         res.type('json');
         res.send(output.result);

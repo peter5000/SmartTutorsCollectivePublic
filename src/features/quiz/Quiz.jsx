@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
-
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
       ...question,
