@@ -31,7 +31,7 @@ function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizNumber, setQuizNumber] = useState(0); // important for resetting quiz component
-  
+
 
   const [student, setStudent] = useState({ });
 
@@ -117,7 +117,7 @@ function App() {
       }
     }
 
-    if (key === 'learning path') 
+    if (key === 'learning path')
     {setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value.learningPath}` }]);
 
     }
@@ -153,7 +153,7 @@ function App() {
         };
         saveStudent(studentData);
         setStudent(studentData);
-        
+
         generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
           let quizObj = res.data;
           if (quizObj.quiz && quizObj.quiz.questions) {
@@ -183,7 +183,7 @@ function App() {
             setEvaluatedQuiz(null);
             setQuizCompleted(false);
             setStep(3);
-          } 
+          }
           else {
             console.error('Invalid suggestion type selected');
           }
@@ -390,6 +390,12 @@ function App() {
                   grade={selections.grade}
                   level={selections.level}
                   onQuizComplete={(result) => {
+                    // Quiz skipped
+                    if (!result) {
+                      document.getElementById('question').hidden = true;
+                      document.querySelector(".suggestion-selection").hidden = false;
+                      return;
+                    }
                   // Extract strengths and weaknesses from the result
                     setEvaluatedQuiz(result.quiz);
                     const strengths = result.quiz.topic_strengths || [];
@@ -406,7 +412,7 @@ function App() {
                       weaknesses: weaknesses.join(', '),
                       lastLogin: new Date().toISOString()
                     };
-                    
+
                     setStudent(updateStudent);
                     saveStudent(updateStudent);
                     // Hide the quiz
