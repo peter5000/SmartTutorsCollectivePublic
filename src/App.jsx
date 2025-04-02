@@ -113,6 +113,11 @@ function App() {
       }
     }
 
+    if (key === 'learning path') 
+    {setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value.learningPath}` }]);
+
+    }
+
     setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
     setStep((prevStep) => prevStep + 1);
     setStepInput('');
@@ -430,7 +435,7 @@ function App() {
           </div>
         );
       case 7:
-        return <div>{topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)};</div>
+        return <div>{topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}</div>
       case 8:
       return (
         <div>
