@@ -189,6 +189,7 @@ function App() {
             setQuiz(null);
             setEvaluatedQuiz(null);
             setQuizCompleted(false);
+            setFirstQuiz(true);
             setStep(3);
           }
           else {
