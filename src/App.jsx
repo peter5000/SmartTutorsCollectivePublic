@@ -28,13 +28,7 @@ function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
 
-  const [student, setStudent] = useState({
-    age: '',
-    grade: '',
-    lastLogin: '',
-    strengths: '',
-    weaknesses: ''
-  });
+  const [student, setStudent] = useState({ });
 
   const [error, setError] = useState('');
  // FRONTEND CODE --------------------------------------------------------------------------------------------
@@ -510,7 +504,7 @@ function App() {
   {/* <ChatIconComponent onClick={() => setShowChat(!showChat)} /> */}
 
   <div className="student-card">
-    {student && (
+    {student && Object.keys(student).length>0 ? (
       <div className="student-details">
         <h2>Student Details</h2>
         <p><strong>Age:</strong> {student.age}</p>
@@ -525,7 +519,7 @@ function App() {
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
       </div>
-    )}
+    ):""}
   </div>
 </div>
 </div>
