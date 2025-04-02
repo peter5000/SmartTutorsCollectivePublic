@@ -6,7 +6,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic }) => {
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState(
     quiz.questions.map((question) => ({
       ...question,
-      chosenAnswer: null,
+      chosenAnswer: -1,
     }))
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
