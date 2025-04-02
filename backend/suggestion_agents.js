@@ -14,6 +14,7 @@ const subjects = ["english", "math", "science"]
 // Agents
 const booksAgentMap = new Map();
 const topicsAgentMap = new Map();
+const bookInquiryAgentMap = new Map();
 
 // Input for agents
 // Either subject selection and level or subject selection and strength/weakness
@@ -38,6 +39,15 @@ for(var i = 0; i < subjects.length; i++) {
       name: `${subject} Expert`,
       role: `${subject} Expert with Internet Access`,
       goal: `Find key topics of ${subject}.`,
+      background: `Experienced in information gathering, communication, summarization, and providing topics on the subject when needed.`,
+      tools: []
+    })
+  )
+  bookInquiryAgentMap.set(subject,
+    new Agent({
+      name: `${subject} Expert`,
+      role: `${subject} Expert with Internet Access`,
+      goal: `Given a book on ${subject}, answer any questions about the topic. Some questions are out of scope to answer. In that case, feel free to tell the user that.`,
       background: `Experienced in information gathering, communication, summarization, and providing topics on the subject when needed.`,
       tools: []
     })
@@ -114,4 +124,22 @@ function createTopicSuggestionTeam(subject, age, grade, level, strength=null, we
   });
 }
 
-module.exports = { createBookSuggestionTeam, createTopicSuggestionTeam }
+function createBookInquiryTeam(subject, age, grade, level, book, question) {
+  subject = subject.toLowerCase();
+  let content = `Answer the following query about the book ${book}. For context, the user is of age ${age}, grade ${grade}, and self evaluated level of ${level}. This is their question: ${question}`;
+  const writingTask = new Task({
+    title: 'Book Inquiry',
+    description: content,
+    expectedOutput: "plain text",
+    agent: bookInquiryAgentMap.get(subject),
+    outputSchema: z.string()
+  })
+  return new Team({
+    name: 'Book Inquiry Team',
+    agents: [bookInquiryAgentMap.get(subject)],
+    tasks: [writingTask],
+    env: { OPENAI_API_KEY: process.env.OPENAI_API_KEY }
+  });
+}
+
+module.exports = { createBookSuggestionTeam, createTopicSuggestionTeam, createBookInquiryTeam }

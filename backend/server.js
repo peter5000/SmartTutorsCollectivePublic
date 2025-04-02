@@ -1,5 +1,5 @@
 const { createQuizGenTeam, createQuizEvalTeam, createTopicQuizGenTeam, createTopicQuizEvalTeam } = require('./agents');
-const { createBookSuggestionTeam, createTopicSuggestionTeam } = require('./suggestion_agents');
+const { createBookSuggestionTeam, createTopicSuggestionTeam, createBookInquiryTeam } = require('./suggestion_agents');
 const readline = require('readline');
 const express = require('express');
 const fs = require('fs');
@@ -173,6 +173,42 @@ app.post('/book-suggestions', async (req, res) => {
     const output = await createBookSuggestionTeam(subject, age, grade, level, strength, weakness).start()
     if (output.status === 'FINISHED') {
         res.type('json');
+        res.send(output.result);
+    } else if (output.status === 'BLOCKED') {
+        res.status(400).json({ message: 'Workflow is blocked, unable to complete' });
+    }
+    } catch (error) {
+        res.status(400).json({ message: error });
+    }
+});
+
+app.post('/book-information', async (req, res) => {
+    const {subject, age, grade, level, strength, weakness} = req.body;
+    if (!grade || !subject || !age || !level) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
+    try {
+    const output = await createBookSuggestionTeam(subject, age, grade, level, strength, weakness).start()
+    if (output.status === 'FINISHED') {
+        res.type('json');
+        res.send(output.result);
+    } else if (output.status === 'BLOCKED') {
+        res.status(400).json({ message: 'Workflow is blocked, unable to complete' });
+    }
+    } catch (error) {
+        res.status(400).json({ message: error });
+    }
+});
+
+app.post('/book-inquiry', async (req, res) => {
+    const {subject, age, grade, level, book, question} = req.body;
+    if (!subject || !age || !grade || !level || !book || !question) {
+        return res.status(400).json({ message: 'Missing key data' });
+    }
+    try {
+    const output = await createBookInquiryTeam(subject, age, grade, level, book, question).start()
+    if (output.status === 'FINISHED') {
+        res.type('text');
         res.send(output.result);
     } else if (output.status === 'BLOCKED') {
         res.status(400).json({ message: 'Workflow is blocked, unable to complete' });
