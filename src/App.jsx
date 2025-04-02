@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import AgeSelector from './features/selection/AgeSelector';
 import GradeSelector from './features/selection/GradeSelector';
+import BookQuery from './features/selection/BookQuery';
 import SubjectSelector from './features/selection/SubjectSelector';
 import LevelSelector from './features/selection/LevelSelector';
 import SuggestionSelector from './features/selection/SuggestionSelector';
@@ -45,6 +46,7 @@ function App() {
  const [showChat, setShowChat] = useState(false);
   const [topics, setTopics] = useState([]);
   const [books, setBooks] = useState([]);
+  const [currentBook, setCurrentBook] = useState('');
 
 
   const generateImage = async () => {
@@ -193,7 +195,10 @@ function App() {
               }
             });
           } else if (key === 'book') {
-            // Evan's code to generate detailed book summary
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'Agent', text: 'What would you like to learn more about this book?' }
+            ]);
           } else {
             // Handle invalid selection
             // Theoretically, never should trigger
@@ -268,6 +273,17 @@ function App() {
         level: level,
         strength: strength,
         weakness: weakness
+      });
+    };
+
+    const bookQuery = (subject, age, grade, level, book, question) => {
+      return axios.post(`http://localhost:5000/book-inquiry`, {
+        subject: subject,
+        age: age,
+        grade: grade,
+        level: level,
+        book: book,
+        question: question
       });
     };
 
@@ -384,7 +400,11 @@ function App() {
       return (
           <div>
             {topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}
-            {books.length > 0 && (<BookSelector books={books} onSelect={handleSelect} />)}
+            {books.length > 0 && (<BookSelector books={books} onSelect={(key, book) => {
+              handleSelect(key, book);
+              setCurrentBook(book);
+              setStep(step + 2);
+            }} />)}
           </div>
         );
       case 7:
@@ -437,6 +457,29 @@ function App() {
           </div>
         </div>
       );
+      case 8:
+        return (
+          <BookQuery
+            onQuery={(question) => {
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: 'Student', text: `${question}` },
+              ]);
+              bookQuery(selections.subject, selections.age, selections.age, selections.level, currentBook, question).then(res => {
+                let response = res.data;
+                setMessages((prevMessages) => [
+                  ...prevMessages,
+                  { sender: 'Agent', text: `${response}` },
+                ]);
+
+              })
+            }}
+            onQuit={() => {
+              // NEXT ITEM IN FLOWCHART HERE
+            }
+          }
+          />
+        );
       default:
         return null;
     }
