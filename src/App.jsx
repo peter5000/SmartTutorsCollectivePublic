@@ -28,6 +28,7 @@ function App() {
   const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizNumber, setQuizNumber] = useState(0); // important for resetting quiz component
 
   const [student, setStudent] = useState({ });
 
@@ -150,7 +151,7 @@ function App() {
         };
         saveStudent(studentData);
         setStudent(studentData);
-
+        
         generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
           let quizObj = res.data;
           if (quizObj.quiz && quizObj.quiz.questions) {
@@ -217,7 +218,7 @@ function App() {
           let quizObj = res.data;
           if (quizObj.quiz && quizObj.quiz.questions) {
             setQuiz(quizObj.quiz);
-            document.getElementById('question').hidden = false;
+            document.getElementById('topic-question').hidden = false;
           } else {
             console.error('Quiz object does not contain questions');
           }
@@ -371,7 +372,7 @@ function App() {
                   level={selections.level}
                   onQuizComplete={(result) => {
                   // Extract strengths and weaknesses from the result
-                    setEvaluatedQuiz(result.quiz)
+                    setEvaluatedQuiz(result.quiz);
                     const strengths = result.quiz.topic_strengths || [];
                     const weaknesses = result.quiz.topic_weaknesses || [];
                     // Calculate the score
@@ -406,6 +407,8 @@ function App() {
                 <EvalQuiz
                   quiz={evaluatedQuiz}
                   onDone={() => {
+                    setEvaluatedQuiz(null);
+                    setQuiz(null);
                     document.getElementById('evalQuiz').hidden = true;
                     setMessages((prevMessages) => [
                       ...prevMessages,
@@ -413,7 +416,6 @@ function App() {
                     ]);
                     document.querySelector(".suggestion-selection").hidden = false;
                     setQuizCompleted(false);
-                    setEvaluatedQuiz(null);
                   }}
                 />
 
@@ -426,8 +428,8 @@ function App() {
       return (
           <div>
             {learningPaths.length > 0 && (<LearningPathSelector learningPaths={learningPaths} onSelect={handleSelect} />)}
-            {books.length > 0 && (<BookSelector books={books} onSelect={(key, book) => {
-              handleSelect(key, book);
+            {books.length > 0 && (<BookSelector books={books} onSelect={(book, authors) => {
+              handleSelect("book", book);
               setCurrentBook(book);
               setCurrentBookAuthors(authors);
               setStep(step + 3);
@@ -439,7 +441,7 @@ function App() {
       case 8:
       return (
         <div>
-          <div id="question" hidden={true}>
+          <div id="topic-question" hidden={true}>
               {quiz && !quizCompleted && (
               <Quiz
                 quiz={quiz}
@@ -458,7 +460,7 @@ function App() {
                   const score = `${correctAnswers} / ${totalQuestions}`; // Format as "correct / total"
                   // Hide the quiz
                   setQuizCompleted(true);
-                  document.getElementById('question').hidden = true;
+                  document.getElementById('topic-question').hidden = true;
                   // Display a message or update the UI
                   setMessages((prevMessages) => [
                     ...prevMessages,
@@ -478,6 +480,8 @@ function App() {
               <EvalQuiz
                 quiz={evaluatedQuiz}
                 onDone={() => {
+                  setEvaluatedQuiz(null);
+                  setQuiz(null);
                   document.getElementById('evalQuiz').hidden = true;
                 }}
               />
