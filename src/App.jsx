@@ -30,7 +30,6 @@ function App() {
   const [question, setQuestion] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [quizNumber, setQuizNumber] = useState(0); // important for resetting quiz component
   const [firstQuiz, setFirstQuiz] = useState(true);
 
 
@@ -154,7 +153,6 @@ function App() {
         };
         saveStudent(studentData);
         setStudent(studentData);
-        console.log(firstQuiz)
         generateQuiz(selections.grade, selections.subject, selections.age, value).then(res => {
           let quizObj = res.data;
           if (quizObj.quiz && quizObj.quiz.questions) {
@@ -169,6 +167,7 @@ function App() {
       case 6:
         {
           setFirstQuiz(false);
+          setQuiz(null);
           if (value == 'Learning Paths') {
             setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Generating learning paths'}]);
             suggestLearningPaths(selections.grade, selections.subject, selections.age, selections.level, student.strengths, student.weaknesses)
@@ -227,7 +226,6 @@ function App() {
         setSelections((prev) => ({ ...prev, topic: value }));
         generateQuiz(selections.grade, selections.subject, selections.age, selections.level, value).then(res => {
           let quizObj = res.data;
-          console.log("Quiz object: ", quizObj)
           if (quizObj.quiz && quizObj.quiz.questions) {
             setQuiz(quizObj.quiz);
             document.getElementById('topic-question').hidden = false;
