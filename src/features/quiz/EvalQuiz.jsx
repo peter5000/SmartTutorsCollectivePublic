@@ -26,11 +26,12 @@ const EvalQuiz = ({ quiz, onDone }) => {
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
+  const questionWithNum = `${currentQuestionIndex + 1}. ${currentQuestion.question}`
 
   return (
     <div className="quiz-container">
       <div className="quiz-title">Evaluated Quiz</div>
-      <p className="quiz-question">{currentQuestion.question}</p>
+      <p className="quiz-question">{questionWithNum}</p>
       <ul className="quiz-options">
         {currentQuestion.options.map((option, index) => (
           <li key={index} className={"quiz-option " + (currentQuestion.chosenAnswer === index && currentQuestion.chosenAnswer != currentQuestion.correctAnswer ? "quiz-incorrect" : ' ') +

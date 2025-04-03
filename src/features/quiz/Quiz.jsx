@@ -52,6 +52,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQu
 
   const currentQuestion = questionsWithAnswers[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questionsWithAnswers.length - 1;
+  const questionWithNum = `${currentQuestionIndex + 1}. ${currentQuestion.question}`
 
   const handleEvaluationPromptResponse = (response) => {
     if (response === 'yes') {
@@ -65,7 +66,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQu
   if (showEvaluationPrompt) {
     return (
       <div className="quiz-container">
-        <p>Are you ready to start your evaluation, or would you like to explore other options first?</p>
+        <p>Would you like to take the evaluation now?</p>
         <div className="eval-confirmation">
           <button onClick={() => handleEvaluationPromptResponse('yes')}>Yes</button>
           <button onClick={() => handleEvaluationPromptResponse('no')}>No</button>
@@ -77,7 +78,7 @@ const Quiz = ({ quiz, onQuizComplete, subject, age, grade, level, topic, firstQu
   return (
     <div className="quiz-container">
       <h2 className="quiz-title">Quiz</h2>
-      <p className="quiz-question">{currentQuestion.question}</p>
+      <p className="quiz-question">{questionWithNum}</p>
       <ul className="quiz-options">
         {currentQuestion.options.map((option, index) => (
           <li key={index} className="quiz-option">
