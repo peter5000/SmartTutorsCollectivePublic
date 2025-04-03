@@ -58,6 +58,8 @@ cd backend
 node server.js
 ```
 
+## Resolving issues
+
 If the frontend is failing to run, on the first terminal, check your current directory by:
 
 ```bash
