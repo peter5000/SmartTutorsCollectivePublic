@@ -48,6 +48,7 @@ function App() {
   const [learningPaths, setLearningPaths] = useState([]);
   const [currentBook, setCurrentBook] = useState('');
   const [currentBookAuthors, setCurrentBookAuthors] = useState('');
+const [oldStudent, setOldStudent] = useState(true);
 
   const MAIN_SELECTOR_STEP = 5;
 
@@ -136,6 +137,7 @@ function App() {
     // Add agent's prompt for the next step
     switch (nextStep + 1) {
       case 1:
+        setOldStudent(false);
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Now, could you please enter your age?' }]);
         break;
       case 2:
@@ -615,7 +617,7 @@ function App() {
         <h2>Student Details</h2>
         <p>
           <strong>Status: </strong>
-          {student.lastLogin
+          {oldStudent
             ? "Returned Student"
             : "New Student"}
         </p>
