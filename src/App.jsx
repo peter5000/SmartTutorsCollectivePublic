@@ -132,7 +132,7 @@ function App() {
 
     setStepInput('');
 
-    let nextStep = jumpStep ? jumpStep : step; 
+    let nextStep = jumpStep ? jumpStep : step;
     // Add agent's prompt for the next step
     switch (nextStep + 1) {
       case 1:
@@ -146,6 +146,15 @@ function App() {
         break;
       case 4:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Great choice! Please select your proficiency level.' }]);
+        setSelections((prev) => ({ ...prev, subject: value }));
+        setStudent((prev) => ({...prev,
+          email: selections.email,
+          age: selections.age,
+          grade: selections.grade,
+          subject: value,
+          strengths: "",
+          weaknesses: ""
+        }));
         break;
       case 5:
           {
@@ -506,7 +515,7 @@ function App() {
             onQuit={() => {
               // CLEAR LEARNING PATHS
               // LOOP HERE -> EXITING CHAT TO OPTION SELECTS
-              setBooks([]); 
+              setBooks([]);
               setCurrentBook(null);
               setCurrentBookAuthors(null);
               handleSelect(null, null, MAIN_SELECTOR_STEP);
