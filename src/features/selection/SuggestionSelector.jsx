@@ -1,10 +1,10 @@
 import React from 'react';
 
 const SuggestionSelector = ({ onSelect }) => {
-  const suggestions = ['Learning Paths', 'Books', 'Subject'];
+  const suggestions = ['Learning Paths', 'Books', 'Select a New Subject'];
 
   return (
-    <div className="suggestion-selection" hidden={true}>
+    <div className="suggestion-selection" hidden={false}>
     {suggestions.map((suggestion) => (
       <label key={suggestion}>
         <input

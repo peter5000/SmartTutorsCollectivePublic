@@ -18,7 +18,7 @@ const BookQuery = ({ onQuery, onQuit }) => {
       }}>
         Submit Query
         </button>
-        <button onClick={onQuit()}>
+        <button onClick={onQuit}>
           Exit Chat
         </button>
       </div>

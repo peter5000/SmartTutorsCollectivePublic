@@ -49,6 +49,8 @@ function App() {
   const [currentBook, setCurrentBook] = useState('');
   const [currentBookAuthors, setCurrentBookAuthors] = useState('');
 
+  const MAIN_SELECTOR_STEP = 5;
+
 
   const generateImage = async () => {
     try {
@@ -106,28 +108,33 @@ function App() {
   }
 
 
-  const handleSelect = async (key, value) => {
+  const handleSelect = async (key, value, jumpStep) => {
+    // JUMP STEP SHOULD BE PASSED IN TO JUMP BACKWARDS/FORWARDS IN FLOW. SHOULD BE ONE LESS THAN DESIRED CASE NUMBER (as step + 1 exists in switch statement)
+    console.log(key, value, jumpStep)
+    if (jumpStep === undefined) {
+      setSelections((prev) => ({ ...prev, [key]: value }));
 
-    setSelections((prev) => ({ ...prev, [key]: value }));
-
-    if (key === 'email') {
-      const studentFound = await fetchStudent(value);
-      if(studentFound) {
-        return;
+      if (key === 'email') {
+        const studentFound = await fetchStudent(value);
+        if(studentFound) {
+          return;
+        }
       }
-    }
-
-    if (key === 'learning path')
-      {setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value.learningPath}` }]);
+      if (key === 'learning path')
+        {setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value.learningPath}` }]);
+      } else {
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
+      }
+      setStep((prevStep) => prevStep + 1);
     } else {
-      setMessages((prevMessages) => [...prevMessages, { sender: 'Student', text: `${key}: ${value}` }]);
+      setStep(jumpStep + 1);
     }
 
-    setStep((prevStep) => prevStep + 1);
     setStepInput('');
 
+    let nextStep = jumpStep ? jumpStep : step; 
     // Add agent's prompt for the next step
-    switch (step + 1) {
+    switch (nextStep + 1) {
       case 1:
         setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Now, could you please enter your age?' }]);
         break;
@@ -176,6 +183,14 @@ function App() {
           }
       case 6:
         {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject above or do you want to try new subject?` }
+          ]);
+        }
+        break;
+      case 7:
+        {
           setFirstQuiz(false);
           setQuiz(null);
           if (value == 'Learning Paths') {
@@ -188,7 +203,7 @@ function App() {
             suggestBooks(selections.grade, selections.subject, selections.age, selections.level, student.strengths, student.weaknesses)
               .then(res => res.data)
               .then(res => setBooks(res.books));
-          } else if (value == 'Subject') {
+          } else if (value == 'Select a New Subject') {
             setMessages((prevMessages) => [...prevMessages, {sender: 'Agent', text: 'Please select a new subject.'}])
             setQuiz(null);
             setEvaluatedQuiz(null);
@@ -201,7 +216,7 @@ function App() {
           }
           break;
         }
-      case 7:
+      case 8:
         {
           if (key === 'learning path') {
             value = JSON.parse(value);
@@ -234,7 +249,7 @@ function App() {
           }
           break;
         }
-      case 8:
+      case 9:
         setMessages((prevMessages) => [
           ...prevMessages,
           { sender: 'Agent', text: 'Generating the quiz...' }
@@ -399,11 +414,8 @@ function App() {
                     // Quiz skipped
                     if (!result) {
                       document.getElementById('question').hidden = true;
-                      setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { sender: 'Agent', text: `Would you like to explore book recommendations and learning paths for the selected subject, or are you interested in diving into a new subject instead?` }
-                      ]);
-                      document.querySelector(".suggestion-selection").hidden = false;
+                      // LOOP HERE SKIPPED QUIZ TO 3 FLOW
+                      handleSelect(null, null, MAIN_SELECTOR_STEP);
                       return;
                     }
                   // Extract strengths and weaknesses from the result
@@ -446,38 +458,63 @@ function App() {
                 <EvalQuiz
                   quiz={evaluatedQuiz}
                   onDone={() => {
+                    // LOOP HERE -> FIRST EVAL QUIZ TO 3 WAY CHOICE
+                    document.getElementById('evalQuiz').hidden = true;
                     setEvaluatedQuiz(null);
                     setQuiz(null);
-                    document.getElementById('evalQuiz').hidden = true;
-                    setMessages((prevMessages) => [
-                      ...prevMessages,
-                      { sender: 'Agent', text: `Would you like to explore book recommendations and learning paths for the selected subject, or are you interested in diving into a new subject instead?` }
-                    ]);
-                    document.querySelector(".suggestion-selection").hidden = false;
                     setQuizCompleted(false);
+                    handleSelect(null, null, MAIN_SELECTOR_STEP);
                   }}
                 />
 
               )}
             </div>
-            <SuggestionSelector onSelect={handleSelect} />
           </div>
         );
+
       case 6:
+        return (<SuggestionSelector onSelect={handleSelect} />)
+      case 7:
       return (
           <div>
             {learningPaths.length > 0 && (<LearningPathSelector learningPaths={learningPaths} onSelect={handleSelect} />)}
             {books.length > 0 && (<BookSelector books={books} onSelect={(book, authors) => {
-              handleSelect("book", book);
               setCurrentBook(book);
               setCurrentBookAuthors(authors);
-              setStep(step + 3);
+              handleSelect("book", book);
             }} />)}
           </div>
         );
-      case 7:
-        return <div>{topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}</div>
       case 8:
+        return <div>
+          {topics.length > 0 && (<TopicSelector topics={topics} onSelect={handleSelect} />)}
+          {books.length > 0 && (<BookQuery
+            onQuery={(question) => {
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: 'Student', text: `${question}` },
+              ]);
+              bookQuery(selections.subject, selections.age, selections.age, selections.level, currentBook, currentBookAuthors, question).then(res => {
+                let response = res.data;
+                setMessages((prevMessages) => [
+                  ...prevMessages,
+                  { sender: 'Agent', text: `${response}` },
+                ]);
+
+              })
+            }}
+            onQuit={() => {
+              // CLEAR LEARNING PATHS
+              // LOOP HERE -> EXITING CHAT TO OPTION SELECTS
+              setBooks([]); 
+              setCurrentBook(null);
+              setCurrentBookAuthors(null);
+              handleSelect(null, null, MAIN_SELECTOR_STEP);
+            }
+          }
+          />)}
+        </div>
+      case 9:
       return (
         <div>
           <div id="topic-question" hidden={true}>
@@ -510,7 +547,7 @@ function App() {
                   document.getElementById('evalQuiz').hidden = false;
                 // Clear the topic selection
                  setSelections((prev) => ({ ...prev, topic: null }));
-                 console.log("Selected topic: ", selections.topic)
+                 setLearningPaths([]); // CLEAR LEARNING PATHS
                 }}
               />
             )}
@@ -520,9 +557,13 @@ function App() {
               <EvalQuiz
                 quiz={evaluatedQuiz}
                 onDone={() => {
+                  // LOOP HERE -> TOPIC EVAL QUIZ TO 3 WAY CHOICE
                   setEvaluatedQuiz(null);
                   setQuiz(null);
                   document.getElementById('evalQuiz').hidden = true;
+                  setQuizCompleted(false);
+                  setTopics([]);
+                  handleSelect(null, null, MAIN_SELECTOR_STEP);
                 }}
               />
 
@@ -530,29 +571,6 @@ function App() {
           </div>
         </div>
       );
-      case 9:
-        return (
-          <BookQuery
-            onQuery={(question) => {
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: 'Student', text: `${question}` },
-              ]);
-              bookQuery(selections.subject, selections.age, selections.age, selections.level, currentBook, currentBookAuthors, question).then(res => {
-                let response = res.data;
-                setMessages((prevMessages) => [
-                  ...prevMessages,
-                  { sender: 'Agent', text: `${response}` },
-                ]);
-
-              })
-            }}
-            onQuit={() => {
-              // NEXT ITEM IN FLOWCHART HERE
-            }
-          }
-          />
-        );
       default:
         return null;
     }
