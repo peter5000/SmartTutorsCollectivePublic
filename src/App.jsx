@@ -586,14 +586,14 @@ function App() {
     {student && Object.keys(student).length>0 ? (
       <div className="student-details">
         <h2>Student Details</h2>
+        <p>
+          <strong>Status: </strong>
+          {student.lastLogin
+            ? "Returned Student"
+            : "New Student"}
+        </p>
         <p><strong>Age:</strong> {student.age}</p>
         <p><strong>Grade:</strong> {student.grade}</p>
-        <p>
-          <strong>Last Activity: </strong>
-          {student.lastLogin
-            ? new Date(student.lastLogin).toLocaleString()
-            : ""}
-        </p>
         <p><strong>Subject:</strong> {student.subject}</p>
         <p><strong>Strengths:</strong> {student.strengths}</p>
         <p><strong>Weaknesses:</strong> {student.weaknesses}</p>
