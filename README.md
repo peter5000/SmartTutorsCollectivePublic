@@ -62,14 +62,14 @@ If the frontend is failing to run, on the first terminal, check your current dir
 
 ```bash
 pwd
-// Expected Output: <YourFilePath>/SmartTutorsCollective
+// Expected Output: <YourFilePath>/SDAIC-Hackathon-Team-08
 ```
 
 If the backend is failing to run, on the second terminal, check your current directory by:
 
 ```bash
 pwd
-// Expected Output: <YourFilePath>/SmartTutorsCollective/backend
+// Expected Output: <YourFilePath>/SDAIC-Hackathon-Team-08/backend
 ```
 
 ## Using the Demo
