@@ -4,12 +4,12 @@ const BookQuery = ({ onQuery, onQuit }) => {
   return (
     <div>
       <select id="book-query-input">
-        <option>What is this book about?</option>
-        <option>What topics are covered in this book?</option>
-        <option>Are there any similar books on the same topic?</option>
-        <option>Where can I buy this book?</option>
-        <option>Why should I read this book?</option>
-        <option>What are some reviews or ratings for this book?</option>
+        <option>What is the main focus or theme of this book?</option>
+        <option>Which topics are covered in this book?</option>
+        <option>Can you suggest similar books on the same subject?</option>
+        <option>Where can I purchase this book?</option>
+        <option>What makes this book worth reading?</option>
+        <option>Are there any notable reviews or ratings for this book?</option>
       </select>
       <div className="book-selection-box">
         <button onClick={() => {

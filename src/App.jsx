@@ -38,7 +38,7 @@ function App() {
   const [error, setError] = useState('');
  // FRONTEND CODE --------------------------------------------------------------------------------------------
  const [searchInput, setSearchInput] = useState('');
- const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email.' }]);
+ const [messages, setMessages] = useState([{ sender: 'Agent', text: 'Welcome! Please enter your email address to get started.' }]);
  const [step, setStep] = useState(0);
  const [selections, setSelections] = useState({});
  const [stepInput, setStepInput] = useState('');
@@ -79,7 +79,7 @@ function App() {
       setStep(3);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: 'Agent', text: 'Welcome back! Please select the subject you are interested in.' },
+        { sender: 'Agent', text: 'Welcome back! What subject would you like to explore today?' },
       ]);
 
       saveStudent(response.data); // calling save student to update last login in the backend data
@@ -129,26 +129,26 @@ function App() {
     // Add agent's prompt for the next step
     switch (step + 1) {
       case 1:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your age.' }]);
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Thank you! Now, could you please enter your age?' }]);
         break;
       case 2:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your grade.' }]);
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Got it! Next, please enter your grade level.' }]);
         break;
       case 3:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select the subject you are interested in.' }]);
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Great! What subject are you interested in exploring today?' }]);
         break;
       case 4:
-        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Please select your level.' }]);
+        setMessages((prevMessages) => [...prevMessages, { sender: 'Agent', text: 'Great choice! Please select your proficiency level.' }]);
         break;
       case 5:
           {
             setMessages((prevMessages) => [
               ...prevMessages,
-              { sender: 'Agent', text: 'Thank you! Your selections have been recorded' },
+              { sender: 'Agent', text: 'Thank you! Your preferences have been saved.' },
             ]);
             setMessages((prevMessages) => [
               ...prevMessages,
-              { sender: 'Agent', text: 'Preparing AI Agents based on your choices...' },
+              { sender: 'Agent', text: 'Your personalized learning experience is being prepared. Please hold tight!' },
             ]);
 
             const studentData = {
@@ -401,7 +401,7 @@ function App() {
                       document.getElementById('question').hidden = true;
                       setMessages((prevMessages) => [
                         ...prevMessages,
-                        { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject above or do you want to try new subject?` }
+                        { sender: 'Agent', text: `Would you like to explore book recommendations and learning paths for the selected subject, or are you interested in diving into a new subject instead?` }
                       ]);
                       document.querySelector(".suggestion-selection").hidden = false;
                       return;
@@ -451,7 +451,7 @@ function App() {
                     document.getElementById('evalQuiz').hidden = true;
                     setMessages((prevMessages) => [
                       ...prevMessages,
-                      { sender: 'Agent', text: `Do you want to see book suggestions or learning paths under the selected subject above or do you want to try new subject?` }
+                      { sender: 'Agent', text: `Would you like to explore book recommendations and learning paths for the selected subject, or are you interested in diving into a new subject instead?` }
                     ]);
                     document.querySelector(".suggestion-selection").hidden = false;
                     setQuizCompleted(false);
