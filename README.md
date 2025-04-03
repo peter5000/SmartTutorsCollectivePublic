@@ -9,8 +9,8 @@ To get this project up and running, follow these steps:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/sreyasukavasi3/SmartTutorsCollective.git
-   cd SmartTutorsCollective
+   git clone https://github.com/SeattleDataAI-Hackathon/SDAIC-Hackathon-Team-08
+   cd SDAIC-Hackathon-Team-08
    ```
 
 2. **Install dependencies**
@@ -58,18 +58,20 @@ cd backend
 node server.js
 ```
 
+## Resolving issues
+
 If the frontend is failing to run, on the first terminal, check your current directory by:
 
 ```bash
 pwd
-// Expected Output: <YourFilePath>/SmartTutorsCollective
+// Expected Output: <YourFilePath>/SDAIC-Hackathon-Team-08
 ```
 
 If the backend is failing to run, on the second terminal, check your current directory by:
 
 ```bash
 pwd
-// Expected Output: <YourFilePath>/SmartTutorsCollective/backend
+// Expected Output: <YourFilePath>/SDAIC-Hackathon-Team-08/backend
 ```
 
 ## Using the Demo
