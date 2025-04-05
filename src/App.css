@@ -33,7 +33,7 @@ body::before {
   font-weight: 600; /* Slightly lighter bold */
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  width: 98%;
+  width: 97%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Softer shadow */
   position: sticky; /* Sticky header */
   top: 0;
