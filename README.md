@@ -4,7 +4,7 @@ Smart Tutors Collective is a web app powered by AI agents, offering personalized
 
 ## Live Demo Link
 
-https://bit.ly/smarttutorspresentation
+https://smarttutorscollective.web.app/
 
 
 ## Presentation and Recorded Demo Link
