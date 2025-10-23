@@ -197,7 +197,7 @@ function createLearningPathSuggestionTeam(subject, age, grade, level, strength=u
     name: 'Learning Path Suggestion Team',
     agents: [learningPathAgent],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().openai.key }
+    env: { OPENAI_API_KEY: openaiApiKey }
   });
 }
 
