@@ -7,9 +7,8 @@ const { TavilySearchResults } = require('@langchain/community/tools/tavily_searc
 function createBookSuggestionTeam(subject, age, grade, level, strength=undefined, weakness=undefined) {
 
   // Agent Creation
-  const config = functions.config();
-  const tavilyApiKey = config.tavily.key;
-  const openaiApiKey = config.openai.key;
+  const tavilyApiKey = process.env.TAVILY_API_KEY;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!tavilyApiKey || !openaiApiKey) {
       throw new Error("Missing API keys in Firebase Functions configuration.");
@@ -64,8 +63,7 @@ function createBookSuggestionTeam(subject, age, grade, level, strength=undefined
 function createTopicSuggestionTeam(subject, age, grade, level, learningPath=null, summary=null, strength=null, weakness=null) {
 
   // Agent Creation
-  const config = functions.config();
-  const openaiApiKey = config.openai.key;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!openaiApiKey) {
       throw new Error("Missing OpenAI API key in Firebase Functions configuration.");
@@ -115,8 +113,7 @@ function createBookInquiryTeam(subject, age, grade, level, book, authors, questi
 
 
   // Agent Creation
-  const config = functions.config();
-  const openaiApiKey = config.openai.key;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!openaiApiKey) {
       throw new Error("Missing OpenAI API key in Firebase Functions configuration.");
@@ -153,8 +150,7 @@ function createBookInquiryTeam(subject, age, grade, level, book, authors, questi
 function createLearningPathSuggestionTeam(subject, age, grade, level, strength=undefined, weakness=undefined) {
 
   // Agent Creation
-  const config = functions.config();
-  const openaiApiKey = config.openai.key;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!openaiApiKey) {
       throw new Error("Missing OpenAI API key in Firebase Functions configuration.");

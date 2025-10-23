@@ -7,16 +7,14 @@ const { TavilySearchResults } = require('@langchain/community/tools/tavily_searc
 // QUIZ GENERATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
 function createQuizGenTeam(subject, age, grade, level) {
   // Agent Creation
-  const config = functions.config();
-  const tavilyApiKey = config.tavily.key;
-  const openaiApiKey = config.openai.key;
+  const tavilyApiKey = process.env.TAVILY_API_KEY;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!tavilyApiKey || !openaiApiKey) {
       throw new Error("Missing API keys in Firebase Functions configuration.");
   }
 
   const searchTool = new TavilySearchResults({ maxResults: 5, apiKey: tavilyApiKey });
-  const model = new ChatOpenAI({ modelName: "gpt-4o", apiKey: openaiApiKey });
 
   const expertAgent = new Agent({
       name: `${subject} Expert`,
@@ -68,8 +66,7 @@ function createQuizGenTeam(subject, age, grade, level) {
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
 function createQuizEvalTeam(subject, age, grade, level, quiz) {
   // Agent Creation
-  const config = functions.config();
-    const openaiApiKey = config.openai.key;
+  const openaiApiKey = process.env.OPENAI_API_KEY;
 
     if (!openaiApiKey) {
         throw new Error("Missing OpenAI API key in Firebase Functions configuration.");
@@ -151,9 +148,8 @@ function createQuizEvalTeam(subject, age, grade, level, quiz) {
 function createTopicQuizGenTeam(subject, age, grade, level, topic) {
 
   // Agent Creation
-    const config = functions.config();
-    const tavilyApiKey = config.tavily.key;
-    const openaiApiKey = config.openai.key;
+    const tavilyApiKey = process.env.TAVILY_API_KEY;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
 
     if (!tavilyApiKey || !openaiApiKey) {
         throw new Error("Missing API keys in Firebase Functions configuration.");
@@ -256,9 +252,8 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
 function createTopicQuizEvalTeam(subject, age, grade, level, quiz, topic) {
 
   // Agent Creation
-    const config = functions.config();
-    const tavilyApiKey = config.tavily.key;
-    const openaiApiKey = config.openai.key;
+    const tavilyApiKey = process.env.TAVILY_API_KEY;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
 
     if (!tavilyApiKey || !openaiApiKey) {
         throw new Error("Missing API keys in Firebase Functions configuration.");
