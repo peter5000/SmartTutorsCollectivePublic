@@ -6,7 +6,7 @@ const { TavilySearchResults } = require('@langchain/community/tools/tavily_searc
 // Define the search tool used by the Research Agent
 const searchTool = new TavilySearchResults({
   maxResults: 5,
-  apiKey: functions.config().TAVILY_API_KEY
+  apiKey: functions.config().tavily.key
 });
 
 const subjects = ["english", "math", "science"]
@@ -97,7 +97,7 @@ function createBookSuggestionTeam(subject, age, grade, level, strength=undefined
     name: 'Book Suggestion Team',
     agents: [booksAgentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 
@@ -130,7 +130,7 @@ function createTopicSuggestionTeam(subject, age, grade, level, learningPath=null
     name: 'Topic Suggestion Team',
     agents: [topicsAgentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 
@@ -148,7 +148,7 @@ function createBookInquiryTeam(subject, age, grade, level, book, authors, questi
     name: 'Book Inquiry Team',
     agents: [bookInquiryAgentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 
@@ -184,7 +184,7 @@ function createLearningPathSuggestionTeam(subject, age, grade, level, strength=u
     name: 'Learning Path Suggestion Team',
     agents: [learningPathAgentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 

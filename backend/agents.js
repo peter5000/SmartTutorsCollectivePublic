@@ -6,7 +6,7 @@ const { TavilySearchResults } = require('@langchain/community/tools/tavily_searc
 // Define the search tool used by the Research Agent
 const searchTool = new TavilySearchResults({
   maxResults: 5,
-  apiKey: functions.config().TAVILY_API_KEY
+  apiKey: functions.config().tavily.key
 });
 
 
@@ -74,7 +74,7 @@ function createQuizGenTeam(subject, age, grade, level) {
     name: 'Quiz Creation Team',
     agents: [agentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 
 
@@ -143,7 +143,7 @@ subject = subject.toLowerCase();
     name: 'Quiz Evaluation Team',
     agents: [agentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 
@@ -218,7 +218,7 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
     name: 'Quiz with Topic Creation Team',
     agents: [agentMap.get(subject), editingAgentMap.get(subject)],
     tasks: [writingTask, editingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 
 
@@ -278,7 +278,7 @@ subject = subject.toLowerCase();
     name: 'Quiz with Topic Evaluation Team',
     agents: [agentMap.get(subject)],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().OPENAI_API_KEY }
+    env: { OPENAI_API_KEY: functions.config().openai.key }
   });
 }
 
