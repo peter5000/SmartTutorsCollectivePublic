@@ -3,44 +3,29 @@ const { z } = require('zod');
 const { Agent, Task, Team } = require('kaibanjs');
 const { TavilySearchResults } = require('@langchain/community/tools/tavily_search');
 
-// Define the search tool used by the Research Agent
-const searchTool = new TavilySearchResults({
-  maxResults: 5,
-  apiKey: functions.config().tavily.key
-});
 
+// QUIZ GENERATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
+function createQuizGenTeam(subject, age, grade, level) {
+  // Agent Creation
+  const config = functions.config();
+  const tavilyApiKey = config.tavily.key;
+  const openaiApiKey = config.openai.key;
 
-const subjects = ["english", "math", "science"]
+  if (!tavilyApiKey || !openaiApiKey) {
+      throw new Error("Missing API keys in Firebase Functions configuration.");
+  }
 
-// English, Math, Science agents
-const agentMap = new Map();
-const editingAgentMap = new Map();
+  const searchTool = new TavilySearchResults({ maxResults: 5, apiKey: tavilyApiKey });
+  const model = new ChatOpenAI({ modelName: "gpt-4o", apiKey: openaiApiKey });
 
-for(var i = 0; i < subjects.length; i++) {
-  let subject = subjects[i];
-  agentMap.set(subject,
-    new Agent({
+  const expertAgent = new Agent({
       name: `${subject} Expert`,
       role: `${subject} Expert with Internet Access`,
       goal: `Provide information of ${subject}, conducting research online to supplement missing knowledge.`,
       background: `Experienced in information gathering, communication, evaluating experience levels, and providing topics on the subject when needed.`,
       tools: [searchTool]
-    })
-  )
-  editingAgentMap.set(subject,
-    new Agent({
-      name: `${subject} Expert`,
-      role: `${subject} Expert with Internet Access`,
-      goal: `Read and edit multiple choice question set of ${subject}, conducting research online to pull up questions related given topic.`,
-      background: `Experienced in reading and understanding questions in json format. Understanding ${subject} enough to evaluate whether given questions are related to given topic. Mastered in looking up online to pull up questions only related to given topic.`,
-      tools: []
-    })
-  )
-}
+  });
 
-
-// QUIZ GENERATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
-function createQuizGenTeam(subject, age, grade, level) {
   subject = subject.toLowerCase();
   const writingTask = new Task({
     title: 'Quiz creation',
@@ -56,7 +41,7 @@ function createQuizGenTeam(subject, age, grade, level) {
         }
       ]}
     }`,
-    agent: agentMap.get(subject),
+    agent: expertAgent,
     outputSchema: z.object({
         quiz: z.object({
             questions: z.array(z.object({
@@ -72,9 +57,9 @@ function createQuizGenTeam(subject, age, grade, level) {
   });
   return new Team({
     name: 'Quiz Creation Team',
-    agents: [agentMap.get(subject)],
+    agents: [expertAgent],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().openai.key }
+    env: { OPENAI_API_KEY: openaiApiKey }
   });
 
 
@@ -82,8 +67,23 @@ function createQuizGenTeam(subject, age, grade, level) {
 
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, and SELF DECLARED LEVEL
 function createQuizEvalTeam(subject, age, grade, level, quiz) {
-quiz = JSON.stringify(quiz);
-subject = subject.toLowerCase();
+  // Agent Creation
+  const config = functions.config();
+    const openaiApiKey = config.openai.key;
+
+    if (!openaiApiKey) {
+        throw new Error("Missing OpenAI API key in Firebase Functions configuration.");
+    }
+
+    const expertAgent = new Agent({
+        name: `${subject} Expert`,
+        role: `${subject} Expert with Internet Access`,
+        goal: `Provide information of ${subject}, conducting research online to supplement missing knowledge.`,
+        background: `Experienced in information gathering, communication, evaluating experience levels, and providing topics on the subject when needed.`
+    });
+
+  quiz = JSON.stringify(quiz);
+  subject = subject.toLowerCase();
   const writingTask = new Task({
     title: 'Quiz Feedback',
     description: `You'll receive a 10 question multiple choice quiz in json format.
@@ -121,7 +121,7 @@ subject = subject.toLowerCase();
       \"topic_strengths\": [list of strengths (topics)],
       \"topic_weaknesses\" [list of weaknesses (topics)]
     }`,
-    agent: agentMap.get(subject),
+    agent: expertAgent,
     outputSchema: z.object({
         quiz: z.object({
             questions: z.array(z.object({
@@ -141,14 +141,42 @@ subject = subject.toLowerCase();
   });
   return new Team({
     name: 'Quiz Evaluation Team',
-    agents: [agentMap.get(subject)],
+    agents: [expertAgent],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().openai.key }
+    env: { OPENAI_API_KEY: openaiApiKey }
   });
 }
 
 // QUIZ GENERATION BASED ON SUBJECT, AGE, GRADE, SELF DECLARED LEVEL, and TOPIC
 function createTopicQuizGenTeam(subject, age, grade, level, topic) {
+
+  // Agent Creation
+    const config = functions.config();
+    const tavilyApiKey = config.tavily.key;
+    const openaiApiKey = config.openai.key;
+
+    if (!tavilyApiKey || !openaiApiKey) {
+        throw new Error("Missing API keys in Firebase Functions configuration.");
+    }
+
+    const searchTool = new TavilySearchResults({ maxResults: 5, apiKey: tavilyApiKey });
+
+    const expertAgent = new Agent({
+        name: `${subject} Expert`,
+        role: `${subject} Expert with Internet Access`,
+        goal: `Provide information of ${subject}, conducting research online to supplement missing knowledge.`,
+        background: `Experienced in information gathering, communication, evaluating experience levels, and providing topics on the subject when needed.`,
+        tools: [searchTool]
+    });
+
+    const editingAgent = new Agent({
+      name: `${subject} Expert`,
+      role: `${subject} Expert with Internet Access`,
+      goal: `Read and edit multiple choice question set of ${subject}, conducting research online to pull up questions related given topic.`,
+      background: `Experienced in reading and understanding questions in json format. Understanding ${subject} enough to evaluate whether given questions are related to given topic. Mastered in looking up online to pull up questions only related to given topic.`,
+      tools: []
+    })
+
   subject = subject.toLowerCase();
   const writingTask = new Task({
     title: 'Quiz creation',
@@ -163,7 +191,7 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
         }
       ]}
     }`,
-    agent: agentMap.get(subject),
+    agent: expertAgent,
     outputSchema: z.object({
         quiz: z.object({
             questions: z.array(z.object({
@@ -201,7 +229,7 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
         }
       ]}
     }`,
-    agent: editingAgentMap.get(subject),
+    agent: editingAgent,
     outputSchema: z.object({
         quiz: z.object({
             questions: z.array(z.object({
@@ -216,9 +244,9 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
   });
   return new Team({
     name: 'Quiz with Topic Creation Team',
-    agents: [agentMap.get(subject), editingAgentMap.get(subject)],
+    agents: [expertAgent, editingAgent],
     tasks: [writingTask, editingTask],
-    env: { OPENAI_API_KEY: functions.config().openai.key }
+    env: { OPENAI_API_KEY: openaiApiKey }
   });
 
 
@@ -226,6 +254,26 @@ function createTopicQuizGenTeam(subject, age, grade, level, topic) {
 
 // QUIZ EVALUATION BASED ON SUBJECT, AGE, GRADE, SELF DECLARED LEVEL, and TOPIC
 function createTopicQuizEvalTeam(subject, age, grade, level, quiz, topic) {
+
+  // Agent Creation
+    const config = functions.config();
+    const tavilyApiKey = config.tavily.key;
+    const openaiApiKey = config.openai.key;
+
+    if (!tavilyApiKey || !openaiApiKey) {
+        throw new Error("Missing API keys in Firebase Functions configuration.");
+    }
+
+    const searchTool = new TavilySearchResults({ maxResults: 5, apiKey: tavilyApiKey });
+
+    const expertAgent = new Agent({
+        name: `${subject} Expert`,
+        role: `${subject} Expert with Internet Access`,
+        goal: `Provide information of ${subject}, conducting research online to supplement missing knowledge.`,
+        background: `Experienced in information gathering, communication, evaluating experience levels, and providing topics on the subject when needed.`,
+        tools: [searchTool]
+    });
+
 quiz = JSON.stringify(quiz);
 subject = subject.toLowerCase();
   const writingTask = new Task({
@@ -259,7 +307,7 @@ subject = subject.toLowerCase();
         }
       ]
     }`,
-    agent: agentMap.get(subject),
+    agent: expertAgent,
     outputSchema: z.object({
         quiz: z.object({
             questions: z.array(z.object({
@@ -276,9 +324,9 @@ subject = subject.toLowerCase();
   });
   return new Team({
     name: 'Quiz with Topic Evaluation Team',
-    agents: [agentMap.get(subject)],
+    agents: [expertAgent],
     tasks: [writingTask],
-    env: { OPENAI_API_KEY: functions.config().openai.key }
+    env: { OPENAI_API_KEY: openaiApiKey }
   });
 }
 
