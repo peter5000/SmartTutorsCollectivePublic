@@ -51,7 +51,7 @@ function App() {
 
   const fetchStudent = async (email) => {
     try {
-      const response = await axios.get(`/get-student?email=${email}`);
+      const response = await axios.get(`/api/get-student?email=${email}`);
       setStudent(response.data);
       setError('');
       setSelections((prev) => ({
@@ -85,7 +85,7 @@ function App() {
   };
 
   const saveStudent = async (studentData) => {
-    const response = await axios.post('/save-student', studentData);
+    const response = await axios.post('/api/save-student', studentData);
       console.log(response.data.message);  // Success message
   }
 
@@ -268,7 +268,7 @@ function App() {
   };
 
   const generateQuiz = (grade, subject, age, level, topic=null) => {
-    return axios.post(`/ai/generate-quiz`, {
+    return axios.post(`/api/ai/generate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
@@ -288,7 +288,7 @@ function App() {
   };
 
   const evaluateQuiz = (grade, subject, age, level, quiz) => {
-    return axios.post(`/ai/evaluate-quiz`, {
+    return axios.post(`/api/ai/evaluate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
@@ -298,7 +298,7 @@ function App() {
   };
 
     const suggestTopics = (grade, subject, age, level, learningPath, summary, strength=undefined, weakness=undefined) => {
-      return axios.post(`/ai/topic-suggestions`, {
+      return axios.post(`/api/ai/topic-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -311,7 +311,7 @@ function App() {
     };
 
     const suggestBooks = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
-      return axios.post(`/ai/book-suggestions`, {
+      return axios.post(`/api/ai/book-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -322,7 +322,7 @@ function App() {
     };
 
     const suggestLearningPaths = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
-      return axios.post(`/ai/learning-path-suggestions`, {
+      return axios.post(`/api/ai/learning-path-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -333,7 +333,7 @@ function App() {
     };
 
     const bookQuery = (subject, age, grade, level, book, authors, question) => {
-      return axios.post(`/ai/book-inquiry`, {
+      return axios.post(`/api/ai/book-inquiry`, {
         subject: subject,
         age: age,
         grade: grade,
