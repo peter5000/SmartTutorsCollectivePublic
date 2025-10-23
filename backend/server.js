@@ -14,11 +14,12 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // Allow requests from React frontend
 
+admin.initializeApp();
+
 const db = admin.firestore();
 const folderPath = path.join(__dirname, 'students');
 const filePath = path.join(folderPath, 'students.json');
 
-admin.initializeApp();
 
 app.set('trust proxy', 1);
 
