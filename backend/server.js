@@ -6,6 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 
+const admin = require('firebase-admin');
+const functions = require('firebase-functions');
+const rateLimit = require('express-rate-limit'); // 1. Import
+
 const app = express();
 app.use(express.json());
 app.use(cors()); // Allow requests from React frontend
@@ -13,11 +17,25 @@ app.use(cors()); // Allow requests from React frontend
 const folderPath = path.join(__dirname, 'students');
 const filePath = path.join(folderPath, 'students.json');
 
+admin.initializeApp();
+
+app.set('trust proxy', 1);
+
+const apiLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 30 minutes',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 // Ensure the folder exists
 if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true });
     console.log('Folder created:', folderPath);
 }
+
+app.use('/ai', apiLimiter);
 
 // API to save student data
 app.post('/save-student', (req, res) => {
@@ -95,7 +113,7 @@ app.get('/get-student', (req, res) => {
 });
 
 
-app.post('/generate-quiz', async (req, res) => {
+app.post('/ai/generate-quiz', async (req, res) => {
     const {grade, subject, age, level, topic} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -120,7 +138,7 @@ app.post('/generate-quiz', async (req, res) => {
       }
 });
 
-app.post('/evaluate-quiz', async (req, res) => {
+app.post('/ai/evaluate-quiz', async (req, res) => {
     const {grade, subject, age, level, quiz, topic} = req.body;
     if (!grade || !subject || !age || !level || !quiz) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -146,7 +164,7 @@ app.post('/evaluate-quiz', async (req, res) => {
       }
 });
 
-app.post('/topic-suggestions', async (req, res) => {
+app.post('/ai/topic-suggestions', async (req, res) => {
     const {subject, age, grade, level, learningPath, summary, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -164,7 +182,7 @@ app.post('/topic-suggestions', async (req, res) => {
     }
 });
 
-app.post('/learning-path-suggestions', async (req, res) => {
+app.post('/ai/learning-path-suggestions', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -182,7 +200,7 @@ app.post('/learning-path-suggestions', async (req, res) => {
     }
 });
 
-app.post('/book-suggestions', async (req, res) => {
+app.post('/ai/book-suggestions', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -200,7 +218,7 @@ app.post('/book-suggestions', async (req, res) => {
     }
 });
 
-app.post('/book-information', async (req, res) => {
+app.post('/ai/book-information', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -218,7 +236,7 @@ app.post('/book-information', async (req, res) => {
     }
 });
 
-app.post('/book-inquiry', async (req, res) => {
+app.post('/ai/book-inquiry', async (req, res) => {
     const {subject, age, grade, level, book, authors, question} = req.body;
     if (!subject || !age || !grade || !level || !book || !authors || !question) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -237,7 +255,10 @@ app.post('/book-inquiry', async (req, res) => {
 });
 
 // Start the server
-const PORT = 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+// const PORT = 5000;
+// app.listen(PORT, () => {
+//     console.log(`Server running on http://localhost:${PORT}`);
+// });
+
+// Firebase function export
+exports.api = functions.https.onRequest(app);

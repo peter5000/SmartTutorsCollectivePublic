@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import './App.css';
-import DevUtils from './DevUtils';
-import { imageTeam } from './generateFigure';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
@@ -51,25 +49,9 @@ function App() {
 
   const MAIN_SELECTOR_STEP = 5;
 
-
-  const generateImage = async () => {
-    try {
-      console.log("inside generate image: ", question)
-      const output = await imageTeam.start({ "question" : question });
-      if (output.status === 'FINISHED') {
-        console.log(output.result);
-      } else if (output.status === 'BLOCKED') {
-        console.log(`Workflow is blocked, unable to complete`);
-      }
-    } catch (error) {
-      console.error('Error generating blog post:', error);
-    }
-  };
-
-
   const fetchStudent = async (email) => {
     try {
-      const response = await axios.get(`http://localhost:5000/get-student?email=${email}`);
+      const response = await axios.get(`/get-student?email=${email}`);
       setStudent(response.data);
       setError('');
       setSelections((prev) => ({
@@ -103,7 +85,7 @@ function App() {
   };
 
   const saveStudent = async (studentData) => {
-    const response = await axios.post('http://localhost:5000/save-student', studentData);
+    const response = await axios.post('/save-student', studentData);
       console.log(response.data.message);  // Success message
   }
 
@@ -286,7 +268,7 @@ function App() {
   };
 
   const generateQuiz = (grade, subject, age, level, topic=null) => {
-    return axios.post(`http://localhost:5000/generate-quiz`, {
+    return axios.post(`/ai/generate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
@@ -306,7 +288,7 @@ function App() {
   };
 
   const evaluateQuiz = (grade, subject, age, level, quiz) => {
-    return axios.post(`http://localhost:5000/evaluate-quiz`, {
+    return axios.post(`/ai/evaluate-quiz`, {
       grade: grade,
       subject: subject,
       age: age,
@@ -316,7 +298,7 @@ function App() {
   };
 
     const suggestTopics = (grade, subject, age, level, learningPath, summary, strength=undefined, weakness=undefined) => {
-      return axios.post(`http://localhost:5000/topic-suggestions`, {
+      return axios.post(`/ai/topic-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -329,7 +311,7 @@ function App() {
     };
 
     const suggestBooks = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
-      return axios.post(`http://localhost:5000/book-suggestions`, {
+      return axios.post(`/ai/book-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -340,7 +322,7 @@ function App() {
     };
 
     const suggestLearningPaths = (grade, subject, age, level, strength=undefined, weakness=undefined) => {
-      return axios.post(`http://localhost:5000/learning-path-suggestions`, {
+      return axios.post(`/ai/learning-path-suggestions`, {
         grade: grade,
         subject: subject,
         age: age,
@@ -351,7 +333,7 @@ function App() {
     };
 
     const bookQuery = (subject, age, grade, level, book, authors, question) => {
-      return axios.post(`http://localhost:5000/book-inquiry`, {
+      return axios.post(`/ai/book-inquiry`, {
         subject: subject,
         age: age,
         grade: grade,
