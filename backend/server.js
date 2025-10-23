@@ -25,10 +25,10 @@ const apiLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
-app.use('/ai', apiLimiter);
+app.use('/api/ai', apiLimiter);
 
 // API to save student data
-app.post('/save-student', async (req, res) => {
+app.post('/api/save-student', async (req, res) => {
 
     const { email, age, grade } = req.body;
 
@@ -55,7 +55,7 @@ app.post('/save-student', async (req, res) => {
     }
 });
 
-app.get('/get-student', async (req, res) => {
+app.get('/api/get-student', async (req, res) => {
     const { email } = req.query; // Get email from query params
 
     if (!email) {
@@ -76,14 +76,14 @@ app.get('/get-student', async (req, res) => {
         res.json({ email, ...doc.data() });
 
     } catch (error) {
-        console.error("Error saving student:", error);
-        res.status(500).json({ message: 'Error saving data' });
+        console.error("Error retrieving student:", error);
+        res.status(500).json({ message: `Error retrieving student` });
     }
 
 });
 
 
-app.post('/ai/generate-quiz', async (req, res) => {
+app.post('/api/ai/generate-quiz', async (req, res) => {
     const {grade, subject, age, level, topic} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -108,7 +108,7 @@ app.post('/ai/generate-quiz', async (req, res) => {
       }
 });
 
-app.post('/ai/evaluate-quiz', async (req, res) => {
+app.post('/api/ai/evaluate-quiz', async (req, res) => {
     const {grade, subject, age, level, quiz, topic} = req.body;
     if (!grade || !subject || !age || !level || !quiz) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -134,7 +134,7 @@ app.post('/ai/evaluate-quiz', async (req, res) => {
       }
 });
 
-app.post('/ai/topic-suggestions', async (req, res) => {
+app.post('/api/ai/topic-suggestions', async (req, res) => {
     const {subject, age, grade, level, learningPath, summary, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -152,7 +152,7 @@ app.post('/ai/topic-suggestions', async (req, res) => {
     }
 });
 
-app.post('/ai/learning-path-suggestions', async (req, res) => {
+app.post('/api/ai/learning-path-suggestions', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -170,7 +170,7 @@ app.post('/ai/learning-path-suggestions', async (req, res) => {
     }
 });
 
-app.post('/ai/book-suggestions', async (req, res) => {
+app.post('/api/ai/book-suggestions', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -188,7 +188,7 @@ app.post('/ai/book-suggestions', async (req, res) => {
     }
 });
 
-app.post('/ai/book-information', async (req, res) => {
+app.post('/api/ai/book-information', async (req, res) => {
     const {subject, age, grade, level, strength, weakness} = req.body;
     if (!grade || !subject || !age || !level) {
         return res.status(400).json({ message: 'Missing key data' });
@@ -206,7 +206,7 @@ app.post('/ai/book-information', async (req, res) => {
     }
 });
 
-app.post('/ai/book-inquiry', async (req, res) => {
+app.post('/api/ai/book-inquiry', async (req, res) => {
     const {subject, age, grade, level, book, authors, question} = req.body;
     if (!subject || !age || !grade || !level || !book || !authors || !question) {
         return res.status(400).json({ message: 'Missing key data' });
