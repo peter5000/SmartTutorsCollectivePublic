@@ -1,9 +1,6 @@
 const { createQuizGenTeam, createQuizEvalTeam, createTopicQuizGenTeam, createTopicQuizEvalTeam } = require('./agents');
 const { createBookSuggestionTeam, createTopicSuggestionTeam, createBookInquiryTeam, createLearningPathSuggestionTeam } = require('./suggestion_agents');
-const readline = require('readline');
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 
 const admin = require('firebase-admin');
@@ -17,9 +14,6 @@ app.use(cors()); // Allow requests from React frontend
 admin.initializeApp();
 
 const db = admin.firestore();
-const folderPath = path.join(__dirname, 'students');
-const filePath = path.join(folderPath, 'students.json');
-
 
 app.set('trust proxy', 1);
 
@@ -30,12 +24,6 @@ const apiLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-
-// Ensure the folder exists
-if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-    console.log('Folder created:', folderPath);
-}
 
 app.use('/ai', apiLimiter);
 
@@ -235,12 +223,6 @@ app.post('/ai/book-inquiry', async (req, res) => {
         res.status(400).json({ message: error });
     }
 });
-
-// Start the server
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-// });
 
 // Firebase function export
 exports.api = functions.https.onRequest(app);
